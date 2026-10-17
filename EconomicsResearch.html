@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>淡江大學115學年度第1學期課程教學計畫表 - 產業分析實作</title>
+    <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #2b6cb0;
+            --accent-color: #38a169; /* 綠色系代表開放與創新 */
+            --bg-color: #f7fafc;
+            --card-bg: #ffffff;
+            --text-color: #2d3748;
+            --border-color: #e2e8f0;
+            --ai-tag-bg: #f0fff4;
+            --ai-tag-text: #276749;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .header {
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            margin: 0 0 10px 0;
+            font-size: 24px;
+        }
+
+        .header h2 {
+            color: var(--secondary-color);
+            margin: 0;
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            background: #edf2f7;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+
+        .info-item {
+            font-size: 14px;
+        }
+
+        .info-item strong {
+            color: var(--primary-color);
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            border-left: 4px solid var(--secondary-color);
+            padding-left: 10px;
+            font-size: 18px;
+            margin: 25px 0 15px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #edf2f7;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .ai-badge {
+            display: inline-block;
+            background-color: var(--ai-tag-bg);
+            color: var(--ai-tag-text);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            border: 1px solid #c6f6d5;
+        }
+
+        .policy-box {
+            background-color: #f0fff4;
+            border: 1px solid #c6f6d5;
+            border-left: 4px solid var(--accent-color);
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .policy-box h4 {
+            margin: 0 0 8px 0;
+            color: #22543d;
+        }
+
+        .schedule-table td:nth-child(1) { width: 8%; text-align: center; }
+        .schedule-table td:nth-child(2) { width: 22%; }
+        .schedule-table td:nth-child(3) { width: 40%; }
+        .schedule-table td:nth-child(4) { width: 30%; }
+
+        footer {
+            margin-top: 30px;
+            text-align: right;
+            font-size: 12px;
+            color: #718096;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 標頭資訊 -->
+    <div class="header">
+        <h1>淡江大學 115 學年度第 1 學期課程教學計畫表</h1>
+        <h2>產業分析實作 (INDUSTRY ANALYSIS BY THE CASE STUDY)</h2>
+    </div>
+
+    <!-- 基本資料 -->
+    <div class="info-grid">
+        <div class="info-item"><strong>授課教師：</strong> 池秉聰[span_1](start_span)[span_1](end_span)</div>
+        <div class="info-item"><strong>開課系級：</strong> 經濟四A (TLYXB4A)[span_2](start_span)[span_2](end_span)</div>
+        <div class="info-item"><strong>修別學分：</strong> 必修單學期 / 3學分[span_3](start_span)[span_3](end_span)</div>
+        <div class="info-item"><strong>授課語言：</strong> 中文授課 / 實體課程[span_4](start_span)[span_4](end_span)</div>
+        <div class="info-item"><strong>永續發展：</strong> SDG8, SDG9, SDG11, SDG13[span_5](start_span)[span_5](end_span)</div>
+        <div class="info-item"><strong>特色課程：</strong> 頂石課程、專案實作 (PBL)[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span)</div>
+    </div>
+
+    <!-- 課程簡介 -->
+    <div class="section-title">課程簡介</div>
+    <p>
+        本課程以產業組織理論的結構-行為-績效典範為基礎，介紹完全競爭市場與不完全競爭市場，討論經濟效率及社會福利，說明產業之競爭與合作[span_8](start_span)[span_8](end_span)。指導小組進行討論、發現問題並組織為分析報告[span_9](start_span)[span_9](end_span)。主題包括但不限於總體產業分析、勞動市場、產品安全、資訊問題、智慧財產權、環境保護、公共基礎建設等以時事案例討論產業競合對效率與社會福利影響[span_10](start_span)[span_10](end_span)。
+        <strong>因應生成式 AI 技術崛起，本頂石課程特別融入 AI 工具於產業情報收集與地圖繪製之應用。培養學生調用 AI 進行網路資料自動化彙整與數據分析，並透過專題實作自主設計出具備深度與創新的產業分析報告。</strong>
+    </p>
+
+    <!-- AI 課程政策專區 -->
+    <div class="section-title">課程 AI 應用與規範 POLICY</div>
+    <div class="policy-box">
+        <h4><span class="ai-badge">開放使用 Open Use</span> 課程 AI 使用政策規範</h4>
+        <p style="margin: 0; font-size: 14px;">
+            本課程為頂石專案課程，實施<strong>「開放使用」</strong>AI 政策。鼓勵學生靈活運用生成式 AI（如 ChatGPT、Claude、Copilot）進行產業情報彙整、SWOT 分析、競品動態追蹤與報告簡報製作。<strong>使用原則：</strong>學生於所有報告與研討會海報中必須明確標註 AI 工具出處與 Prompt 輔助範圍，且學生團隊必須對所有產業數據之準確性、真實性及最終分析邏輯負完全責任。
+        </p>
+    </div>
+
+    <!-- 教學目標 -->
+    <div class="section-title">課程教學目標與能力對應</div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 8%;">序號</th>
+                <th>教學目標 (中/英文)</th>
+                <th style="width: 15%;">目標類型</th>
+                <th style="width: 25%;">對應核心能力與素養</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="text-align: center;">1</td>
+                <td>
+                    學生將能夠從廠商、消費者及政府與環境的角度來分析經濟效果。了解市場失靈、廠商行為動機與公共政策之關係[span_11](start_span)[span_11](end_span)。<br>
+                    <small>Analyze economic impacts from firms, consumers, and government perspectives.</small>
+                </td>
+                <td>認知[span_12](start_span)[span_12](end_span)</td>
+                <td>院系能力：A, B, C, D, E, F[span_13](start_span)[span_13](end_span)[span_14](start_span)[span_14](end_span)<br>校級素養：獨立思考、團隊合作、問題解決[span_15](start_span)[span_15](end_span)[span_16](start_span)[span_16](end_span)</td>
+            </tr>
+            <tr>
+                <td style="text-align: center;">2</td>
+                <td>
+                    <span class="ai-badge">AI 融入目標</span> 運用 AI 工具自動化蒐集與整合產業大數據，並能自主設計完整的產業情報分析架構、競品地圖與頂石專案成果（海報/簡報）[span_17](start_span)[span_17](end_span)[span_18](start_span)[span_18](end_span)。<br>
+                    <small>Utilize AI to gather industry intel and design comprehensive industry analysis frameworks and posters.</small>
+                </td>
+                <td>技能、創造</td>
+                <td>院系能力：B, C, D (分析與溝通整合)[span_19](start_span)[span_19](end_span)<br>校級素養：資訊運用、獨立思考、團隊合作[span_20](start_span)[span_20](end_span)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 成績評量方式 -->
+    <div class="section-title">學期成績計算方式</div>
+    <table>
+        <thead>
+            <tr>
+                <th>評量項目</th>
+                <th>百分比</th>
+                <th>評量內容與 AI 規範說明</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>出席率</strong></td>
+                <td>20.0 %[span_21](start_span)[span_21](end_span)</td>
+                <td>課堂出席與討論參與[span_22](start_span)[span_22](end_span)[span_23](start_span)[span_23](end_span)。</td>
+            </tr>
+            <tr>
+                <td><strong>平時評量</strong></td>
+                <td>30.0 %[span_24](start_span)[span_24](end_span)</td>
+                <td>課堂討論、分組運作、自主學習提案與進度簡報[span_25](start_span)[span_25](end_span)[span_26](start_span)[span_26](end_span)[span_27](start_span)[span_27](end_span)。</td>
+            </tr>
+            <tr>
+                <td><strong>期中評量</strong></td>
+                <td>10.0 %[span_28](start_span)[span_28](end_span)</td>
+                <td>期中學習進度檢視與專題階段成果評估[span_29](start_span)[span_29](end_span)[span_30](start_span)[span_30](end_span)。</td>
+            </tr>
+            <tr>
+                <td><strong>期末評量</strong></td>
+                <td>10.0 %[span_31](start_span)[span_31](end_span)</td>
+                <td>期末成果簡報與多元評量表現[span_32](start_span)[span_32](end_span)[span_33](start_span)[span_33](end_span)。</td>
+            </tr>
+            <tr>
+                <td><strong>其他（海報展）</strong></td>
+                <td>30.0 %[span_34](start_span)[span_34](end_span)</td>
+                <td>
+                    <strong>守謙國際會議中心頂石海報展（教師評分80%, 同學互評20%）[span_35](start_span)[span_35](end_span)：</strong><br>
+                    展演產業分析專題海報[span_36](start_span)[span_36](end_span)。評量學生運用 AI 工具彙整產業資料之深度，以及自主設計之產業分析架構（SWOT/競合策略）之獨創性與數據真偽查證[span_37](start_span)[span_37](end_span)[span_38](start_span)[span_38](end_span)。
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 授課進度表 -->
+    <div class="section-title">授課進度表 (18週)</div>
+    <table class="schedule-table">
+        <thead>
+            <tr>
+                <th>週次</th>
+                <th>日期起訖</th>
+                <th>單元教學內容 (Topics)</th>
+                <th>備註 / AI 融入重點</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>1</td><td>115/09/14~115/09/20[span_39](start_span)[span_39](end_span)</td><td>頂石課程挑選題目、小組分組與產業結構介紹[span_40](start_span)[span_40](end_span)</td><td>宣布頂石專題主題與開放使用 AI 規範[span_41](start_span)[span_41](end_span)</td></tr>
+            <tr><td>2</td><td>115/09/21~115/09/27[span_42](start_span)[span_42](end_span)</td><td>產業分析資料蒐集方法與實作[span_43](start_span)[span_43](end_span)</td><td><span class="ai-badge">AI 實作</span> 生成式 AI 工具（ChatGPT/Claude）搜集產業簡報入門</td></tr>
+            <tr><td>3</td><td>115/09/28~115/10/04[span_44](start_span)[span_44](end_span)</td><td>國內外資料庫應用與實作[span_45](start_span)[span_45](end_span)</td><td>結合 AI 進行資料庫文本爬取與初步摘要</td></tr>
+            <tr><td>4</td><td>115/10/05~115/10/11[span_46](start_span)[span_46](end_span)</td><td>數據科學與 AI 應用[span_47](start_span)[span_47](end_span)</td><td><span class="ai-badge">AI 實作</span> 運用 AI 構建產業競爭格局與自動化繪製關係圖</td></tr>
+            <tr><td>5</td><td>115/10/12~115/10/18[span_48](start_span)[span_48](end_span)</td><td>自主學習提案[span_49](start_span)[span_49](end_span)</td><td>小組提交專題提案（需標註 AI 輔助發想範疇）</td></tr>
+            <tr><td>6</td><td>115/10/19~115/10/25[span_50](start_span)[span_50](end_span)</td><td>永續治理與循環經濟[span_51](start_span)[span_51](end_span)</td><td>ESG 與永續產業案例剖析[span_52](start_span)[span_52](end_span)[span_53](start_span)[span_53](end_span)</td></tr>
+            <tr><td>7</td><td>115/10/26~115/11/01[span_54](start_span)[span_54](end_span)</td><td>電子商務與網絡經濟[span_55](start_span)[span_55](end_span)</td><td>平台經濟與商業模式探索[span_56](start_span)[span_56](end_span)</td></tr>
+            <tr><td>8</td><td>115/11/02~115/11/08[span_57](start_span)[span_57](end_span)</td><td>自主學習研究探索[span_58](start_span)[span_58](end_span)</td><td>產業數據交叉核對與 AI 產出內容驗證</td></tr>
+            <tr><td>9</td><td>115/11/09~115/11/15[span_59](start_span)[span_59](end_span)</td><td>期中學習進度檢視與回饋[span_60](start_span)[span_60](end_span)</td><td>專題初稿審查與 AI 引用揭露檢核</td></tr>
+            <tr><td>10</td><td>115/11/16~115/11/22[span_61](start_span)[span_61](end_span)</td><td>金融科技與金融法規[span_62](start_span)[span_62](end_span)</td><td>FinTech 產業競合與法規調適分析[span_63](start_span)[span_63](end_span)[span_64](start_span)[span_64](end_span)</td></tr>
+            <tr><td>11</td><td>115/11/23~115/11/29[span_65](start_span)[span_65](end_span)</td><td>自主學習研究探索[span_66](start_span)[span_66](end_span)</td><td>海報排版設計與 AI 圖表視覺化呈現</td></tr>
+            <tr><td>12</td><td>115/12/07~115/12/13[span_67](start_span)[span_67](end_span)</td><td>產業競合與社會福利評估理論深化[span_68](start_span)[span_68](end_span)</td><td>深化專題理論架構[span_69](start_span)[span_69](end_span)[span_70](start_span)[span_70](end_span)</td></tr>
+            <tr><td>13</td><td>115/12/07~115/12/13[span_71](start_span)[span_71](end_span)</td><td>自主學習研究探索[span_72](start_span)[span_72](end_span)</td><td>完備海報輸出檔案（確認 AI 引用附錄）[span_73](start_span)[span_73](end_span)</td></tr>
+            <tr><td>14</td><td>115/12/14~115/12/20[span_74](start_span)[span_74](end_span)</td><td>報告撰寫與簡報展演[span_75](start_span)[span_75](end_span)</td><td>演練口頭報告與問答回應[span_76](start_span)[span_76](end_span)</td></tr>
+            <tr><td>15</td><td>115/12/21~115/12/27[span_77](start_span)[span_77](end_span)</td><td>守謙國際會議中心頂石成果海報展[span_78](start_span)[span_78](end_span)</td><td><span class="ai-badge">頂石發表</span> 正式海報展（教師評分/學生互評）[span_79](start_span)[span_79](end_span)</td></tr>
+            <tr><td>16</td><td>115/12/28~116/01/03[span_80](start_span)[span_80](end_span)</td><td>自主學習成果報告反思與期末多元評量[span_81](start_span)[span_81](end_span)</td><td>小組 AI 協作經驗與產出檢討反思</td></tr>
+            <tr><td>17</td><td>116/01/04~116/01/10[span_82](start_span)[span_82](end_span)</td><td>期末多元評量週 / 教師彈性教學週[span_83](start_span)[span_83](end_span)</td><td></td></tr>
+            <tr><td>18</td><td>116/01/11~116/01/17[span_84](start_span)[span_84](end_span)</td><td>教師彈性教學週[span_85](start_span)[span_85](end_span)</td><td></td></tr>
+        </tbody>
+    </table>
+
+    <!-- 參考書目與注意事項 -->
+    <div class="section-title">修課注意事項與參考文獻</div>
+    <div style="font-size: 14px; background: #fafafa; padding: 15px; border-radius: 6px; border: 1px solid #eee;">
+        <strong>【海報展重點事項】[span_86](start_span)[span_86](end_span)</strong>
+        <ul>
+            <li>本課程為頂石課程，期末於守謙國際會議中心進行研討會暨海報展，學生需著正式服裝[span_87](start_span)[span_87](end_span)。</li>
+            <li>評分由本系三位教師評分（80%）及學生投票互評（20%）共同組成[span_88](start_span)[span_88](end_span)。</li>
+        </ul>
+        <strong>【參考文獻】[span_89](start_span)[span_89](end_span)</strong>
+        <ul>
+            <li>鍾憲瑞，《產業分析精論：多元觀點與策略思維 2/e》，前程文化[span_90](start_span)[span_90](end_span)。</li>
+            <li>理查·塞勒、凱斯·桑思坦，《推力：決定你的健康、財富與快樂》，時報出版[span_91](start_span)[span_91](end_span)。</li>
+        </ul>
+    </div>
+
+    <footer>
+        淡江大學教務處教學計畫表管理系統匯出資料對照版 | TLYXB4B1718B0A[span_92](start_span)[span_92](end_span)
+    </footer>
+</div>
+
+</body>
+</html>
