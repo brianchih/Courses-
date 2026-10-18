@@ -12,7 +12,7 @@
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
-    <!-- 引入 Leaflet.js (免費開源地圖庫) -->
+    <!-- 引入 Leaflet.js (開源地圖庫) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -35,7 +35,7 @@
                 <nav class="flex space-x-8">
                     <button onclick="switchTab('p1')" id="tab-p1" class="tab-btn active py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">1. 原理介紹</button>
                     <button onclick="switchTab('p2')" id="tab-p2" class="tab-btn py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">2. 如何實作</button>
-                    <button onclick="switchTab('p3')" id="tab-p3" class="tab-btn py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">3. 圖形示範 (免費地圖)</button>
+                    <button onclick="switchTab('p3')" id="tab-p3" class="tab-btn py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">3. 圖形示範 (OSM免費地圖)</button>
                 </nav>
             </div>
         </div>
@@ -117,8 +117,8 @@
                         <h3 class="font-bold text-slate-800 mb-2">前端開放底圖與圖庫</h3>
                         <p class="text-sm text-slate-600 mb-3">100% 免費且免 API Key 部署資源：</p>
                         <ul class="text-sm space-y-1 text-slate-600 font-mono bg-white p-3 rounded border border-slate-200">
-                            <li>• Leaflet.js (極輕量地圖渲染 engine)</li>
-                            <li>• OpenStreetMap / Carto Light Tiles</li>
+                            <li>• Leaflet.js (極輕量地圖渲染引擎)</li>
+                            <li>• OpenStreetMap 官方標準底圖 (永久免費)</li>
                             <li>• MathJax (LaTeX 數學公式排版)</li>
                         </ul>
                     </div>
@@ -149,7 +149,7 @@
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                     <div>
                         <h2 class="text-xl font-bold text-slate-900">半導體產業總部地圖與群聚分析</h2>
-                        <p class="text-sm text-slate-500 mt-1">底圖採用 OpenStreetMap & Carto 自由開放圖資（100% 免費、無須 API 金鑰）</p>
+                        <p class="text-sm text-slate-500 mt-1">採用 OpenStreetMap (OSM) 官方標準開放底圖（100% 免費、無 API 金鑰限制）</p>
                     </div>
                     <div class="flex flex-wrap gap-2">
                         <button onclick="setView('global')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-sm font-medium transition">全球全貌 (91家)</button>
@@ -163,7 +163,7 @@
                 <div id="map"></div>
 
                 <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-600 bg-slate-50 p-4 rounded-lg border border-slate-200">
-                    <div><strong>數據點說明：</strong>橘色點為公司總部經緯度。</div>
+                    <div><strong>數據點說明：</strong>紅色/橘色點為公司總部真實座標點。</div>
                     <div><strong>聚焦核心：</strong>藍色虛線圓圈為台積電總部 3 公里半徑範圍。</div>
                     <div><strong>資料來源與標示：</strong> OpenStreetMap / 證交所 OpenAPI / Wikidata 數據對照。</div>
                 </div>
@@ -239,10 +239,9 @@
             // 初始化地圖，預設經緯度與縮放級別
             map = L.map('map').setView([24.7712, 121.0132], 13);
 
-            // 載入 Carto 自由開放圖資 (免註冊 API Key)
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-                subdomains: 'abcd',
+            // 載入 OpenStreetMap 官方標準圖資 (完全開放免 Key)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                 maxZoom: 19
             }).addTo(map);
 
@@ -250,7 +249,7 @@
             tsmcCircle = L.circle([24.7712, 121.0132], {
                 color: '#2563eb',
                 fillColor: '#60a5fa',
-                fillOpacity: 0.15,
+                fillOpacity: 0.2,
                 radius: 3000,
                 dashArray: '6, 6',
                 weight: 2
