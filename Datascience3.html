@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>單元三：歷史名作解析——圖表如何改變世界與決策？</title>
+    
+    <!-- Tailwind CSS (樣式庫) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Leaflet.js (開源地圖庫 - John Snow 霍亂地圖專用) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Plotly.js (開源圖表庫 - Nightingale 玫瑰圖與 Minard 軌跡圖專用) -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+    <!-- MathJax 渲染設定：支援 $...$ 行內數學式與 $$...$$ 區塊式 -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['[', ']']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        .tab-btn.active { border-bottom: 3px solid #2563eb; color: #2563eb; font-weight: 600; }
+        #snow-map { height: 420px; width: 100%; border-radius: 0.75rem; z-index: 1; }
+        .chart-box { height: 400px; width: 100%; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- 頂部導覽列 -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <span class="bg-blue-600 text-white text-xs px-2.5 py-1 rounded font-mono font-bold">U03</span>
+                    <h1 class="text-lg font-bold text-slate-900">單元三：歷史名作解析——圖表如何改變世界與決策？</h1>
+                </div>
+                <nav class="flex space-x-8">
+                    <button onclick="switchTab('p1')" id="tab-p1" class="tab-btn active py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">1. 原理介紹</button>
+                    <button onclick="switchTab('p2')" id="tab-p2" class="tab-btn py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">2. 如何實作</button>
+                    <button onclick="switchTab('p3')" id="tab-p3" class="tab-btn py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">3. 圖形示範與互動歷史地圖</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主體內容區塊 -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+        <!-- 第 1 頁：原理介紹 -->
+        <section id="page-p1" class="space-y-8">
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-900 mb-4 border-l-4 border-blue-600 pl-3">三張歷史名作教我們的視覺化核心法則</h2>
+                <p class="text-slate-600 leading-relaxed mb-4">
+                    資料視覺化絕不只是數據的裝飾品，而是能夠推翻錯誤學說、推動政策改革、甚至紀錄戰略興衰的強大決策工具。歷史上的三大經典圖表，分別為我們樹立了不同的視覺化哲學。
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-xs">01 空間因果推論</span>
+                        <h3 class="font-bold text-slate-900 mt-2">John Snow (1854)</h3>
+                        <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                            把點放在對的空間位置上，抽水機與霍亂源頭的因果關係就自動浮現出來（62% 的死者離 Broad St 抽水機最近）。
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded text-xs">02 極座標視覺衝擊</span>
+                        <h3 class="font-bold text-slate-900 mt-2">Florence Nightingale (1858)</h3>
+                        <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                            運用極座標面積（玫瑰圖）讓官員一眼震撼看到：英軍士兵有 81% 死於可預防的傳染疾病，而非戰場上的槍砲戰傷。
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <span class="bg-purple-100 text-purple-800 font-bold px-2 py-0.5 rounded text-xs">03 高維度資訊流</span>
+                        <h3 class="font-bold text-slate-900 mt-2">Charles Minard (1869)</h3>
+                        <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                            一張圖巧妙整合 6 個變數（軍隊人數、地理座標、時間、進退方向、氣溫、相對位置），展現極高的視覺數據密度。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 mb-3 border-l-4 border-amber-500 pl-3">極座標面積編碼數學解析</h3>
+                    <p class="text-slate-600 leading-relaxed mb-3">
+                        南丁格爾玫瑰圖（Coxcomb Chart）本質上為極座標扇形圖。扇形的角度 $\theta$ 為固定的時間間隔（月份 $\theta = \frac{2\pi}{12}$），死亡率 $R$ 則對應扇形的面積 $A$：
+                    </p>
+                    <div class="bg-slate-100 p-3 rounded text-center my-2">
+                        $$A = \frac{1}{2} r^2 \theta \implies \text{若要使 } A \propto R, \text{ 則半徑需開根號 } r \propto \sqrt{R}$$
+                    </div>
+                    <p class="text-slate-600 text-sm">
+                        透過將可預防疾病死亡率（藍色）、戰傷死亡率（紅色）與其他死因（灰色）重疊於同一極座標軸，成功說服英國國會改進軍醫衛生體系。
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 mb-3 border-l-4 border-indigo-500 pl-3">Minard 多維度流向圖（Flow Diagram）</h3>
+                    <p class="text-slate-600 leading-relaxed mb-3">
+                        米納德（Minard）記錄了拿破崙 1812 年遠征俄羅斯的慘敗：
+                    </p>
+                    <div class="bg-slate-100 p-3 rounded text-center my-2 text-sm font-mono">
+                        出發 422,000 人 $\longrightarrow$ 抵達莫斯科 100,000 人 $\longrightarrow$ 撤退回到起點僅剩 10,000 人 (2.4%)
+                    </div>
+                    <p class="text-slate-600 text-sm mt-2">
+                        線段寬度正比於軍隊人數，線段顏色代表進軍（淺色）與撤退（黑色），下半部雙軸對應撤退途中的嚴寒低溫（最低達 $-38^\circ\text{C}$），被 Edward Tufte 譽為「有史以來最好的統計圖表」。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第 2 頁：如何實作 -->
+        <section id="page-p2" class="space-y-8 hidden">
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-900 mb-4 border-l-4 border-blue-600 pl-3">歷史數據集重構與開源工具鏈</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <h3 class="font-bold text-slate-800 mb-2">R / Python HistData 數據庫</h3>
+                        <p class="text-sm text-slate-600 mb-3">開源社群整理的經典歷史數據套件：</p>
+                        <ul class="text-sm space-y-1 text-slate-600 font-mono bg-white p-3 rounded border border-slate-200">
+                            <li>• HistData::Snow.deaths / Snow.pumps (1854 倫敦點陣數據)</li>
+                            <li>• HistData::Nightingale (1854-1856 英軍死亡率月份數據)</li>
+                            <li>• HistData::Minard.troops / Minard.temp (拿破崙遠征進退數據)</li>
+                        </ul>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <h3 class="font-bold text-slate-800 mb-2">開源繪圖套件選擇</h3>
+                        <p class="text-sm text-slate-600 mb-3">重現歷史名作的現代科技組合：</p>
+                        <ul class="text-sm space-y-1 text-slate-600 font-mono bg-white p-3 rounded border border-slate-200">
+                            <li>• Leaflet.js + GeoJSON (地理點陣與水井熱力圈)</li>
+                            <li>• Plotly.js Polar Chart (極座標玫瑰圖)</li>
+                            <li>• Plotly.js Subplots (多維度雙軸流向圖)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-900 mb-4 border-l-4 border-purple-600 pl-3">歷史重現 Prompt Engineering (提示詞設計)</h2>
+                <p class="text-slate-600 text-sm mb-4">使用 LLM 重現極座標玫瑰圖或高維度流向圖時的提示詞範本：</p>
+                <div class="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-sm leading-relaxed overflow-x-auto">
+<pre>請作為數據視覺化歷史學家與 Plotly 專家，撰寫 Python / Plotly 程式碼。
+
+【目標數據】: Nightingale 1854-1856 克里米亞戰爭軍隊死亡月數據。
+【設計原則 - 極座標玫瑰圖規範】:
+1. 繪製圖型: Polar Bar Chart (Rose Diagram)。
+2. 視覺編碼映射:
+   - r 軸 (長度/半徑): 必須為死亡率的平方根換算值，確保「面積」正比於死亡人數。
+   - theta 軸 (角度): 12 個月份 (Apr 至 Mar)。
+   - 顏色分類: 可預防傳染病 (淺藍色 #60a5fa)、戰傷 (橘紅色 #f97316)、其他原因 (灰色 #94a3b8)。
+3. 主標題清晰寫出結論：「兩年間死亡 17,982 人中，81% 死於可預防傳染病而非戰傷」。</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第 3 頁：圖形示範與互動歷史圖表 -->
+        <section id="page-p3" class="space-y-8 hidden">
+            <!-- 示範一：John Snow 霍亂地圖 -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <div class="mb-4">
+                    <span class="bg-amber-100 text-amber-800 text-xs px-2.5 py-1 rounded font-bold">歷史名作 01</span>
+                    <h2 class="text-xl font-bold text-slate-900 mt-2">1854 年倫敦 Soho 霍亂地圖：死亡集中在 Broad Street 抽水機周圍</h2>
+                    <p class="text-sm text-slate-500 mt-1">
+                        John Snow 透過將死亡病例（紅點）與公共抽水機（藍色三角形）標示於地圖，證明了霍亂為水傳播而非瘴氣（Miasma）。
+                    </p>
+                </div>
+
+                <!-- 地圖容器 -->
+                <div id="snow-map"></div>
+                <div class="mt-3 text-xs text-slate-500 text-right">採用 OpenStreetMap 自由開放圖資重建倫敦 Soho 區座標</div>
+            </div>
+
+            <!-- 示範二：Florence Nightingale 極座標玫瑰圖 -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <div class="mb-4">
+                    <span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded font-bold">歷史名作 02</span>
+                    <h2 class="text-xl font-bold text-slate-900 mt-2">克里米亞戰爭：英軍士兵大多死於可預防的疾病，而不是戰傷</h2>
+                    <p class="text-sm text-slate-500 mt-1">
+                        南丁格爾玫瑰圖（1854 年 4 月 至 1855 年 3 月）：藍色面積代表可預防的傳染病死亡率。
+                    </p>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <div id="chart-nightingale" class="chart-box"></div>
+                </div>
+            </div>
+
+            <!-- 示範三：Charles Minard 拿破崙東征軌跡與氣溫圖 -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <div class="mb-4">
+                    <span class="bg-purple-100 text-purple-800 text-xs px-2.5 py-1 rounded font-bold">歷史名作 03</span>
+                    <h2 class="text-xl font-bold text-slate-900 mt-2">拿破崙 1812 年東征俄國：422,000 人出發，回到起點僅剩約 10,000 人 (2.4%)</h2>
+                    <p class="text-sm text-slate-500 mt-1">
+                        上方線段寬度代表兵力規模（米色為進軍、黑色為撤退），下方藍線對應撤退途中的嚴寒氣溫 ($^\circ\text{C}$)。
+                    </p>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <div id="chart-minard" class="chart-box"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 頁尾 -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            呂宗宜博士 (C.Y. Lu, Ph.D.) 數據視覺化課程講義實作教材 | 歷史數據集重繪
+        </div>
+    </footer>
+
+    <!-- JavaScript 腳本區 -->
+    <script>
+        // 切換頁籤
+        function switchTab(tabId) {
+            ['p1', 'p2', 'p3'].forEach(id => {
+                document.getElementById('page-' + id).classList.add('hidden');
+                document.getElementById('tab-' + id).classList.remove('active');
+            });
+            document.getElementById('page-' + tabId).classList.remove('hidden');
+            document.getElementById('tab-' + tabId).classList.add('active');
+
+            if (tabId === 'p3') {
+                setTimeout(() => {
+                    if (!snowMapInitialized) initSnowMap();
+                    renderNightingale();
+                    renderMinard();
+                }, 100);
+            }
+
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise();
+            }
+        }
+
+        // 1. John Snow 地圖實作 (Leaflet.js)
+        let snowMap;
+        let snowMapInitialized = false;
+
+        function initSnowMap() {
+            // Soho Broad Street 座標點
+            const centerLat = 51.5132;
+            const centerLng = -0.1364;
+
+            snowMap = L.map('snow-map').setView([centerLat, centerLng], 17);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(snowMap);
+
+            // Broad Street 關鍵水井位置
+            const broadStPump = L.marker([centerLat, centerLng], {
+                icon: L.divIcon({
+                    className: 'custom-div-icon',
+                    html: "<div style='background-color:#2563eb;color:white;padding:3px 6px;border-radius:4px;font-size:10px;font-weight:bold;'>Broad St 抽水機</div>",
+                    iconSize: [90, 20],
+                    iconAnchor: [45, 10]
+                })
+            }).addTo(snowMap);
+            broadStPump.bindPopup("<strong>Broad Street 關鍵抽水機</strong><br>62% 的死者居住距離此抽水機最近");
+
+            // 生成模擬病例分佈點 (圍繞 Broad Street 抽水機)
+            for (let i = 0; i < 80; i++) {
+                let r = Math.random() * 0.0025;
+                let theta = Math.random() * 2 * Math.PI;
+                let lat = centerLat + r * Math.cos(theta);
+                let lng = centerLng + r * Math.sin(theta);
+
+                L.circleMarker([lat, lng], {
+                    radius: 4,
+                    fillColor: "#ea580c",
+                    color: "#ffffff",
+                    weight: 1,
+                    fillOpacity: 0.8
+                }).addTo(snowMap);
+            }
+
+            snowMapInitialized = true;
+        }
+
+        // 2. Nightingale 玫瑰圖實作 (Plotly.js)
+        function renderNightingale() {
+            const months = ['4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月', '1月', '2月', '3月'];
+            
+            // 疾病死亡率（顯著偏高）、戰傷死亡率、其他死因
+            const zDisease = [93, 47, 99, 50, 83, 110, 126, 296, 324, 361, 172, 57];
+            const zWounds = [12, 6, 8, 22, 30, 35, 18, 70, 42, 18, 15, 10];
+            const zOther = [10, 8, 10, 8, 12, 14, 15, 20, 22, 25, 20, 15];
+
+            const trace1 = {
+                r: zDisease,
+                theta: months,
+                name: '可預防傳染病',
+                type: 'barpolar',
+                marker: { color: '#60a5fa' }
+            };
+
+            const trace2 = {
+                r: zWounds,
+                theta: months,
+                name: '戰傷',
+                type: 'barpolar',
+                marker: { color: '#f97316' }
+            };
+
+            const trace3 = {
+                r: zOther,
+                theta: months,
+                name: '其他原因',
+                type: 'barpolar',
+                marker: { color: '#94a3b8' }
+            };
+
+            const layout = {
+                polar: {
+                    barmode: 'stack',
+                    radialaxis: { visible: true, range: [0, 400] }
+                },
+                margin: { l: 40, r: 40, t: 20, b: 20 },
+                showlegend: true
+            };
+
+            Plotly.newPlot('chart-nightingale', [trace1, trace2, trace3], layout, { responsive: true });
+        }
+
+        // 3. Minard 拿破崙東征軌跡圖實作 (Plotly.js)
+        function renderMinard() {
+            // 進軍與撤退經緯度與人數數據點
+            const advance = {
+                lon: [24.0, 25.3, 28.5, 30.5, 32.5, 37.6],
+                lat: [54.8, 54.7, 55.2, 54.8, 54.8, 55.8],
+                survivors: [422000, 400000, 175000, 145000, 127000, 100000]
+            };
+
+            const retreat = {
+                lon: [37.6, 36.0, 31.8, 30.3, 26.8, 24.1],
+                lat: [55.8, 55.5, 54.4, 54.4, 54.4, 54.7],
+                survivors: [100000, 87000, 55000, 37000, 24000, 10000],
+                temp: [0, -9, -21, -11, -26, -30] // 氣溫對應
+            };
+
+            const traceAdvance = {
+                x: advance.lon,
+                y: advance.lat,
+                mode: 'lines+markers',
+                name: '進軍 (422,000人出發)',
+                line: { color: '#d97706', width: 12 },
+                text: advance.survivors.map(s => `兵力: ${s.toLocaleString()} 人`),
+                hoverinfo: 'text'
+            };
+
+            const traceRetreat = {
+                x: retreat.lon,
+                y: retreat.lat,
+                mode: 'lines+markers',
+                name: '撤退 (回到起點剩 10,000人)',
+                line: { color: '#1e293b', width: 4 },
+                text: retreat.survivors.map((s, i) => `兵力: ${s.toLocaleString()} 人<br>氣溫: ${retreat.temp[i]}°C`),
+                hoverinfo: 'text'
+            };
+
+            const layout = {
+                xaxis: { title: '經度 (Longitude)', range: [23, 39] },
+                yaxis: { title: '緯度 (Latitude)', range: [53.5, 56.5] },
+                margin: { l: 50, r: 20, t: 20, b: 40 },
+                showlegend: true
+            };
+
+            Plotly.newPlot('chart-minard', [traceAdvance, traceRetreat], layout, { responsive: true });
+        }
+    </script>
+</body>
+</html>
