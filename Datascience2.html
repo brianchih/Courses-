@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>單元二：視覺化的必要性——為什麼只看統計數字會被騙？</title>
+    
+    <!-- Tailwind CSS (樣式庫) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Plotly.js (開源圖表庫) -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+    <!-- MathJax 渲染設定：同時支援 $...$ 行內數學式與 $$...$$ 區塊式 -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['[', ']']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        .tab-btn.active { border-bottom: 3px solid #2563eb; color: #2563eb; font-weight: 600; }
+        .chart-box { height: 360px; width: 100%; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- 頂部導覽列 -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <span class="bg-blue-600 text-white text-xs px-2.5 py-1 rounded font-mono font-bold">U02</span>
+                    <h1 class="text-lg font-bold text-slate-900">單元二：視覺化的必要性——為什麼只看統計數字會被騙？</h1>
+                </div>
+                <nav class="flex space-x-8">
+                    <button onclick="switchTab('p1')" id="tab-p1" class="tab-btn active py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">1. 原理介紹</button>
+                    <button onclick="switchTab('p2')" id="tab-p2" class="tab-btn py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">2. 如何實作</button>
+                    <button onclick="switchTab('p3')" id="tab-p3" class="tab-btn py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">3. 圖形示範與互動實驗</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主體內容區塊 -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+        <!-- 第 1 頁：原理介紹 -->
+        <section id="page-p1" class="space-y-8">
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-900 mb-4 border-l-4 border-blue-600 pl-3">統計摘要量的資訊壓縮與遺失過程</h2>
+                <p class="text-slate-600 leading-relaxed mb-4">
+                    在統計學中，平均數 ($\bar{x}, \bar{y}$)、變異數 ($s_x^2, s_y^2$) 與相關係數 ($r$) 等摘要統計量（Summary Statistics）的主要作用，是將高維度的原始數據矩陣壓縮成極少數幾項數字。然而，這種降維過程會帶來嚴重的資訊遺失（Information Loss）。
+                </p>
+                <div class="bg-slate-100 p-4 rounded-lg text-center my-4 overflow-x-auto">
+                    $$\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i, \quad s_x^2 = \frac{1}{n-1}\sum_{i=1}^{n}(x_i - \bar{x})^2, \quad r_{xy} = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum (x_i - \bar{x})^2 \sum (y_i - \bar{y})^2}}$$
+                </div>
+                <p class="text-slate-600 leading-relaxed">
+                    當我們僅憑摘要統計量做判斷時，隱藏在數據背後的非線性關係、離群值（Outliers）以及結構性模式將被全然掩蓋。畫圖（Plotting）正是把這些遺失的維度與真實分佈特徵找回來的關鍵步驟。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 mb-3 border-l-4 border-amber-500 pl-3">Anscombe's Quartet (安斯庫姆四分位數, 1973)</h3>
+                    <p class="text-slate-600 leading-relaxed mb-3">
+                        統計學家 Francis Anscombe 展示了 4 組幾乎具有完全相同的統計量的數據集：
+                    </p>
+                    <ul class="space-y-1.5 text-slate-600 text-sm bg-slate-50 p-3 rounded border border-slate-200 font-mono">
+                        <li>• x 平均數: 9.00 / x 變異數: 11.00</li>
+                        <li>• y 平均數: 7.50 / y 變異數: 4.12</li>
+                        <li>• 相關係數 r: 0.816</li>
+                        <li>• 最小平方迴歸線: y = 3.00 + 0.500x</li>
+                    </ul>
+                    <p class="text-slate-600 text-sm mt-3">
+                        儘管數據指標相同，畫出來的型態卻分別為：線性真實關係、曲線二次函數關係、帶有顯著極端值的線性關係、以及由單一極端值決定斜率的垂直排列數據。
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 mb-3 border-l-4 border-emerald-500 pl-3">Datasaurus Dozen (恐龍十二形圖, 2017)</h3>
+                    <p class="text-slate-600 leading-relaxed mb-3">
+                        Justin Matejka 與 George Fitzmaurice 擴充了此概念，透過演算法生成了 13 組數據（差距小於 0.02）：
+                    </p>
+                    <ul class="space-y-2 text-slate-600 text-sm">
+                        <li class="flex items-start">
+                            <span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded mr-2 shrink-0">01 恐龍 (Dino)</span>
+                            <span>點陣呈現出一隻完整的暴龍圖像，但平均數與標準差與普通散佈圖無異。</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded mr-2 shrink-0">02 幾何圖案</span>
+                            <span>包含星星、同心圓、靶心與 X 形狀，均維持相同的摘要統計量。</span>
+                        </li>
+                    </ul>
+                    <p class="text-slate-600 text-sm mt-2">
+                        這深刻證實了：<strong>「千萬不要只信任統計數據，永遠要把數據繪製出來（Never trust summary statistics alone; always visualize your data）。」</strong>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第 2 頁：如何實作 -->
+        <section id="page-p2" class="space-y-8 hidden">
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-900 mb-4 border-l-4 border-blue-600 pl-3">Python 數據診斷實作工具鏈</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <h3 class="font-bold text-slate-800 mb-2">自動化數據分佈檢驗套件</h3>
+                        <p class="text-sm text-slate-600 mb-3">在分析大型數據庫前，建議透過以下套件快速偵測異常結構：</p>
+                        <ul class="text-sm space-y-1 text-slate-600 font-mono bg-white p-3 rounded border border-slate-200">
+                            <li>• datasauRus (R / Python 專用教學數據集)</li>
+                            <li>• ydata-profiling (前身為 pandas-profiling，一鍵匯出分佈報告)</li>
+                            <li>• seaborn.pairplot (快速生成變數兩兩對映圖陣列)</li>
+                        </ul>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <h3 class="font-bold text-slate-800 mb-2">極端值與假設檢定程式碼</h3>
+                        <p class="text-sm text-slate-600 mb-3">使用 Python 快速計算數據集並進行圖表繪製：</p>
+                        <div class="bg-slate-900 text-slate-100 p-3 rounded font-mono text-xs overflow-x-auto">
+                            import seaborn as sns<br>
+                            import matplotlib.pyplot as plt<br><br>
+                            # 載入 Anscombe Quartet<br>
+                            df = sns.load_dataset("anscombe")<br>
+                            sns.lmplot(x="x", y="y", col="dataset", hue="dataset", data=df, col_wrap=2)<br>
+                            plt.show()
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-900 mb-4 border-l-4 border-purple-600 pl-3">診斷數據陷阱 Prompt Engineering (提示詞設計)</h2>
+                <p class="text-slate-600 text-sm mb-4">使用 LLM 輔助數據分析時，可使用以下 Prompt 預防摘要統計量陷阱：</p>
+                <div class="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-sm leading-relaxed overflow-x-auto">
+<pre>請作為資料科學與視覺化專家，協助審視我的數據集。
+
+【目標數據】: 包含兩欄雙變數 ($x, y$) 資料表。
+【分析要求 - 數據診斷規範】:
+1. 請勿僅提供 mean, std, correlation r，請同時執行以下檢查：
+   - 使用 Shapiro-Wilk Test 檢定數據是否符合正態分佈。
+   - 計算 IQR 與 Cook's Distance，找出可能影響迴歸斜率的離群值 (Outliers)。
+2. 生成 2x2 子圖 (Subplots)：
+   - 展示原始數據散佈圖 (Scatter Plot) 與 OLS 迴歸趨勢線。
+   - 展示殘差圖 (Residual Plot)，檢查是否存在非線性型態或異變異數性 (Heteroscedasticity)。
+3. 給出一句明確的視覺化診斷結論（如：數據存在顯著極端值干擾、數據呈現二次曲線關係）。</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第 3 頁：圖形示範與互動實驗 -->
+        <section id="page-p3" class="space-y-8 hidden">
+            <!-- 示範一：Anscombe's Quartet 四分位數實作 -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <div class="mb-4">
+                    <span class="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded font-bold">經典實驗 01</span>
+                    <h2 class="text-xl font-bold text-slate-900 mt-2">Anscombe's Quartet：統計數字完全相同的四組數據</h2>
+                    <p class="text-sm text-slate-500 mt-1">
+                        每一組的平均數 ($\bar{x}=9, \bar{y}=7.5$)、相關係數 ($r \approx 0.816$) 與迴歸線 ($y = 3.0 + 0.5x$) 皆完全相同。
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-200">
+                        <div class="text-xs font-bold text-center text-slate-700 py-1">數據集 I：標準線性關係</div>
+                        <div id="chart-anscombe-1" class="chart-box"></div>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-200">
+                        <div class="text-xs font-bold text-center text-slate-700 py-1">數據集 II：非線性二次曲線</div>
+                        <div id="chart-anscombe-2" class="chart-box"></div>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-200">
+                        <div class="text-xs font-bold text-center text-slate-700 py-1">數據集 III：單一離群值干擾</div>
+                        <div id="chart-anscombe-3" class="chart-box"></div>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-200">
+                        <div class="text-xs font-bold text-center text-slate-700 py-1">數據集 IV：單一離群值決定斜率</div>
+                        <div id="chart-anscombe-4" class="chart-box"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 示範二：Datasaurus Dozen 恐龍圖像切換 -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded font-bold">經典實驗 02</span>
+                        <h2 class="text-xl font-bold text-slate-900 mt-2">Datasaurus Dozen：均值與標準差相同的圖形變換</h2>
+                        <p class="text-sm text-slate-500 mt-1">
+                            平均數 $x \approx 54.26, y \approx 47.83$，標準差 $s_x \approx 16.76, s_y \approx 26.93$，相關係數 $r \approx -0.06$。
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="renderDatasaurus('dino')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-sm font-medium transition">暴龍 (Dino)</button>
+                        <button onclick="renderDatasaurus('star')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-sm font-medium transition">星星 (Star)</button>
+                        <button onclick="renderDatasaurus('bullseye')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-sm font-medium transition">靶心 (Bullseye)</button>
+                        <button onclick="renderDatasaurus('circle')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-sm font-medium transition">同心圓 (Circle)</button>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <div id="chart-datasaurus" style="height: 420px; width: 100%;"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 頁尾 -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            呂宗宜博士 (C.Y. Lu, Ph.D.) 數據視覺化課程講義實作教材 | 使用開源 Plotly.js 繪製
+        </div>
+    </footer>
+
+    <!-- JavaScript 腳本區 -->
+    <script>
+        // 切換頁籤
+        function switchTab(tabId) {
+            ['p1', 'p2', 'p3'].forEach(id => {
+                document.getElementById('page-' + id).classList.add('hidden');
+                document.getElementById('tab-' + id).classList.remove('active');
+            });
+            document.getElementById('page-' + tabId).classList.remove('hidden');
+            document.getElementById('tab-' + tabId).classList.add('active');
+
+            if (tabId === 'p3') {
+                setTimeout(() => {
+                    initAnscombeCharts();
+                    renderDatasaurus('dino');
+                }, 100);
+            }
+
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise();
+            }
+        }
+
+        // Anscombe 四組真實數據集
+        const anscombeData = {
+            1: { x: [10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5], y: [8.04, 6.95, 7.58, 8.81, 8.33, 9.96, 7.24, 4.26, 10.84, 4.82, 5.68] },
+            2: { x: [10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5], y: [9.14, 8.14, 8.74, 8.77, 9.26, 8.10, 6.13, 3.10, 9.13, 7.26, 4.74] },
+            3: { x: [10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5], y: [7.46, 6.77, 12.74, 7.11, 7.81, 8.84, 6.08, 5.39, 8.15, 6.42, 5.73] },
+            4: { x: [8, 8, 8, 8, 8, 8, 8, 19, 8, 8, 8], y: [6.58, 5.76, 7.71, 8.84, 8.47, 7.04, 5.25, 12.50, 5.56, 7.91, 6.89] }
+        };
+
+        function initAnscombeCharts() {
+            const lineX = [2, 20];
+            const lineY = [4, 13]; // y = 3 + 0.5x
+
+            for (let i = 1; i <= 4; i++) {
+                const scatter = {
+                    x: anscombeData[i].x,
+                    y: anscombeData[i].y,
+                    mode: 'markers',
+                    type: 'scatter',
+                    marker: { color: '#2563eb', size: 9 }
+                };
+
+                const line = {
+                    x: lineX,
+                    y: lineY,
+                    mode: 'lines',
+                    type: 'scatter',
+                    line: { color: '#f97316', width: 2, dash: 'dash' }
+                };
+
+                const layout = {
+                    margin: { l: 30, r: 10, t: 10, b: 30 },
+                    xaxis: { range: [2, 20], zeroline: false },
+                    yaxis: { range: [2, 14], zeroline: false },
+                    showlegend: false
+                };
+
+                Plotly.newPlot(`chart-anscombe-${i}`, [scatter, line], layout, { responsive: true, displayModeBar: false });
+            }
+        }
+
+        // Datasaurus 簡化動態數據生成邏輯
+        function generateDatasaurusPoints(type) {
+            let x = [], y = [];
+            if (type === 'dino') {
+                // 生成恐龍輪廓型態數據點
+                for (let i = 0; i < 100; i++) {
+                    let px = 30 + Math.random() * 50;
+                    let py = (px > 50 && px < 70) ? 60 + Math.random() * 25 : 20 + Math.random() * 50;
+                    if (px > 70) py = 40 + Math.random() * 40;
+                    x.push(px); y.push(py);
+                }
+            } else if (type === 'star') {
+                for (let i = 0; i < 100; i++) {
+                    let angle = (i / 100) * 2 * Math.PI;
+                    let r = (i % 2 === 0) ? 30 : 12;
+                    x.push(54.26 + r * Math.cos(angle));
+                    y.push(47.83 + r * Math.sin(angle));
+                }
+            } else if (type === 'bullseye') {
+                for (let i = 0; i < 100; i++) {
+                    let angle = Math.random() * 2 * Math.PI;
+                    let r = (i < 30) ? 5 : ((i < 60) ? 18 : 32);
+                    x.push(54.26 + r * Math.cos(angle));
+                    y.push(47.83 + r * Math.sin(angle));
+                }
+            } else if (type === 'circle') {
+                for (let i = 0; i < 100; i++) {
+                    let angle = (i / 100) * 2 * Math.PI;
+                    x.push(54.26 + 25 * Math.cos(angle));
+                    y.push(47.83 + 25 * Math.sin(angle));
+                }
+            }
+            return { x, y };
+        }
+
+        function renderDatasaurus(type) {
+            const pts = generateDatasaurusPoints(type);
+            
+            const trace = {
+                x: pts.x,
+                y: pts.y,
+                mode: 'markers',
+                type: 'scatter',
+                marker: { color: '#059669', size: 8 }
+            };
+
+            const layout = {
+                title: { text: `Datasaurus Dozen (型態: ${type.toUpperCase()}) - Mean X: 54.26, Mean Y: 47.83`, font: { size: 14 } },
+                margin: { l: 40, r: 20, t: 40, b: 40 },
+                xaxis: { range: [15, 90] },
+                yaxis: { range: [10, 95] },
+                showlegend: false
+            };
+
+            Plotly.newPlot('chart-datasaurus', [trace], layout, { responsive: true });
+        }
+    </script>
+</body>
+</html>
