@@ -5,21 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>單元一：視覺化的本質——圖會說話，也會說謊</title>
     
-    <!-- 引入 Tailwind CSS (樣式庫) -->
+    <!-- Tailwind CSS (樣式庫) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 引入 MathJax (LaTeX 數學公式排版) -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
-    <!-- 引入 Leaflet.js (開源地圖庫) -->
+    <!-- Leaflet.js (開源地圖庫) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- MathJax 渲染設定：同時支援 $...$ 行內數學式與 $$...$$ 區塊式 -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['[', ']']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
         .tab-btn.active { border-bottom: 3px solid #2563eb; color: #2563eb; font-weight: 600; }
-        #map { height: 520px; width: 100%; border-radius: 0.75rem; z-index: 1; }
+        #map { height: 480px; width: 100%; border-radius: 0.75rem; z-index: 1; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
@@ -35,7 +43,7 @@
                 <nav class="flex space-x-8">
                     <button onclick="switchTab('p1')" id="tab-p1" class="tab-btn active py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">1. 原理介紹</button>
                     <button onclick="switchTab('p2')" id="tab-p2" class="tab-btn py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">2. 如何實作</button>
-                    <button onclick="switchTab('p3')" id="tab-p3" class="tab-btn py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">3. 圖形示範 (OSM免費地圖)</button>
+                    <button onclick="switchTab('p3')" id="tab-p3" class="tab-btn py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">3. 圖形示範與對照</button>
                 </nav>
             </div>
         </div>
@@ -143,8 +151,66 @@
             </div>
         </section>
 
-        <!-- 第 3 頁：圖形示範 -->
-        <section id="page-p3" class="space-y-6 hidden">
+        <!-- 第 3 頁：圖形示範與誤導對照 -->
+        <section id="page-p3" class="space-y-8 hidden">
+            <!-- 示範一：經典誤導 vs 誠實畫法（氣泡半徑幾何陷阱） -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <div class="mb-4">
+                    <span class="bg-amber-100 text-amber-800 text-xs px-2.5 py-1 rounded font-bold">誤導手法展示 01</span>
+                    <h2 class="text-xl font-bold text-slate-900 mt-2">半導體巨頭市值對比：用「半徑」還是「面積」畫圖？</h2>
+                    <p class="text-sm text-slate-500 mt-1">
+                        同一份 2026 年市值數據：NVIDIA (5.24 兆) vs 台積電 (2.18 兆，實為 NVIDIA 的 0.41 倍/2.4 倍差距)。
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 誤導版本 -->
+                    <div class="border-2 border-red-200 bg-red-50/30 p-5 rounded-lg text-center">
+                        <div class="text-red-600 font-bold text-sm mb-2">✕ 誤導畫法：半徑與數值成正比</div>
+                        <p class="text-xs text-slate-500 mb-4">半徑 $r \propto \text{市值}$ 使得視覺「面積」放大至 $2.4^2 \approx 5.76$ 倍！</p>
+                        
+                        <div class="flex items-end justify-center space-x-6 h-48 py-4">
+                            <div class="flex flex-col items-center">
+                                <div class="w-32 h-32 bg-orange-500/80 rounded-full flex items-center justify-center text-white font-bold text-xs shadow-md">
+                                    NVIDIA<br>$5,245B
+                                </div>
+                                <span class="text-xs mt-2 text-slate-600">r = 64px</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="w-14 h-14 bg-amber-400/80 rounded-full flex items-center justify-center text-white font-bold text-[10px] shadow-md">
+                                    TSMC<br>$2,189B
+                                </div>
+                                <span class="text-xs mt-2 text-slate-600">r = 27px</span>
+                            </div>
+                        </div>
+                        <div class="bg-red-100 text-red-800 text-xs p-2 rounded mt-2">視覺印象：NVIDIA 看起來巨大近 6 倍！</div>
+                    </div>
+
+                    <!-- 誠實版本 -->
+                    <div class="border-2 border-emerald-200 bg-emerald-50/30 p-5 rounded-lg text-center">
+                        <div class="text-emerald-600 font-bold text-sm mb-2">✓ 誠實畫法：面積與數值成正比</div>
+                        <p class="text-xs text-slate-500 mb-4">半徑取平方根 $r \propto \sqrt{\text{市值}}$，精確呈現真實的 2.4 倍面積比例。</p>
+                        
+                        <div class="flex items-end justify-center space-x-6 h-48 py-4">
+                            <div class="flex flex-col items-center">
+                                <div class="w-28 h-28 bg-blue-600/80 rounded-full flex items-center justify-center text-white font-bold text-xs shadow-md">
+                                    NVIDIA<br>$5,245B
+                                </div>
+                                <span class="text-xs mt-2 text-slate-600">r = 56px (A ∝ 5245)</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="w-18 h-18 bg-sky-500/80 rounded-full flex items-center justify-center text-white font-bold text-[10px] shadow-md">
+                                    TSMC<br>$2,189B
+                                </div>
+                                <span class="text-xs mt-2 text-slate-600">r = 36px (A ∝ 2189)</span>
+                            </div>
+                        </div>
+                        <div class="bg-emerald-100 text-emerald-800 text-xs p-2 rounded mt-2">真實反應：正確傳達 2.4 倍的理性差距。</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 示範二：地圖視覺化實作 -->
             <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                     <div>
@@ -198,6 +264,10 @@
                         map.invalidateSize();
                     }
                 }, 100);
+            }
+            // 觸發 MathJax 重新解析公式
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise();
             }
         }
 
