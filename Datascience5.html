@@ -16,7 +16,7 @@
         window.MathJax = {
             tex: {
                 inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['[', ']']]
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
             },
             svg: { fontCache: 'global' }
         };
@@ -150,4 +150,184 @@
 【目標數據】: 台灣 (n=48) 與美國 (n=22) 半導體公司 FY2025 ROE 數據。
 【設計原則 - 分佈與幾何規範】:
 1. 嚴禁僅繪製平均數長條圖 (Mean Bar Chart)。
-2. 請
+2. 請繪製「散佈點陣圖 (Strip Plot) + 中位數橫線 (Median Bar)」：
+   - 標示出每一個公司的數據點 (Jittered points)，並在 Hover 資訊中顯示公司名稱。
+   - 特別突出標註極端離群值（如 Apple ROE 152%），並說明其對平均數的拉抬影響。
+3. 若包含圓形/氣泡圖，必須強制對數值開平方根 (r = sqrt(value))，並在頁腳註明「面積與金額成正比」。
+4. 圖表標題寫出誠實結論（如：「兩群大幅重疊，單一公司拉高平均 5.7 個百分點」）。</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第 3 頁：圖形示範與 A/B 對照 -->
+        <section id="page-p3" class="space-y-8 hidden">
+            <!-- 示範一：幾何半徑放大對照 -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <div class="mb-4">
+                    <span class="bg-amber-100 text-amber-800 text-xs px-2.5 py-1 rounded font-bold">對照組 01</span>
+                    <h2 class="text-xl font-bold text-slate-900 mt-2">半導體市值對比：半徑對應 vs 面積對應</h2>
+                    <p class="text-sm text-slate-500 mt-1">真實數據：NVIDIA $5,245B vs 台積電 $2,189B (真實差距為 2.40 倍)。</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border-2 border-red-200 bg-red-50/30 p-4 rounded-lg">
+                        <div class="text-red-600 font-bold text-sm mb-2 text-center">✕ 誤導畫法：半徑與數值成正比 ($r \propto V$)</div>
+                        <div id="chart-geom-bad" class="chart-box"></div>
+                        <div class="bg-red-100 text-red-800 text-xs p-2 rounded text-center mt-2">視覺效果：視覺面積差距暴增為 5.74 倍！誇大獨大印象。</div>
+                    </div>
+                    <div class="border-2 border-emerald-200 bg-emerald-50/30 p-4 rounded-lg">
+                        <div class="text-emerald-600 font-bold text-sm mb-2 text-center">✓ 誠實畫法：面積與數值成正比 ($r \propto \sqrt{V}$)</div>
+                        <div id="chart-geom-good" class="chart-box"></div>
+                        <div class="bg-emerald-100 text-emerald-800 text-xs p-2 rounded text-center mt-2">視覺效果：圓形面積精確呈現 2.40 倍的理性比例。</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 示範二：平均數迷思對照 -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <div class="mb-4">
+                    <span class="bg-red-100 text-red-800 text-xs px-2.5 py-1 rounded font-bold">對照组 02</span>
+                    <h2 class="text-xl font-bold text-slate-900 mt-2">美台公司 ROE 對比：只看平均 vs 看每家公司分佈</h2>
+                    <p class="text-sm text-slate-500 mt-1">真實數據：美國 ROE 平均 31.5% (含 Apple 152%) vs 台灣 ROE 平均 12.6%。</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border-2 border-red-200 bg-red-50/30 p-4 rounded-lg">
+                        <div class="text-red-600 font-bold text-sm mb-2 text-center">✕ 誤導畫法：只畫平均數柱狀圖</div>
+                        <div id="chart-mean-bad" class="chart-box"></div>
+                        <div class="bg-red-100 text-red-800 text-xs p-2 rounded text-center mt-2">結論導向：「美國公司平均 ROE 31%，是台灣的 2.5 倍！」</div>
+                    </div>
+                    <div class="border-2 border-emerald-200 bg-emerald-50/30 p-4 rounded-lg">
+                        <div class="text-emerald-600 font-bold text-sm mb-2 text-center">✓ 誠實畫法：畫出每家公司點陣與中位數</div>
+                        <div id="chart-mean-good" class="chart-box"></div>
+                        <div class="bg-emerald-100 text-emerald-800 text-xs p-2 rounded text-center mt-2">結論導向：「兩群大幅重疊，Apple 一家拉升美國平均 5.7 個百分點。」</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 頁尾 -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            呂宗宜博士 (C.Y. Lu, Ph.D.) 數據視覺化課程講義實作教材 | 幾何與平均數陷阱剖析
+        </div>
+    </footer>
+
+    <!-- JavaScript 腳本區 -->
+    <script>
+        // 切換頁籤
+        function switchTab(tabId) {
+            ['p1', 'p2', 'p3'].forEach(id => {
+                document.getElementById('page-' + id).classList.add('hidden');
+                document.getElementById('tab-' + id).classList.remove('active');
+            });
+            document.getElementById('page-' + tabId).classList.remove('hidden');
+            document.getElementById('tab-' + tabId).classList.add('active');
+
+            if (tabId === 'p3') {
+                setTimeout(() => {
+                    renderGeomCharts();
+                    renderMeanCharts();
+                }, 100);
+            }
+
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise();
+            }
+        }
+
+        // 1. 幾何半徑 vs 面積對照圖表繪製
+        function renderGeomCharts() {
+            // 誤導版本：以 Marker Size 與數值成正比 (視覺面積放大為平方倍)
+            const traceBad = {
+                x: ['NVIDIA', 'TSMC', 'Broadcom', 'Samsung', 'Micron'],
+                y: [1, 1, 1, 1, 1],
+                mode: 'markers+text',
+                text: ['NV<br>$5,245B', 'TSMC<br>$2,189B', 'AVGO<br>$1,643B', 'Samsung<br>$1,055B', 'MU<br>$1,053B'],
+                textposition: 'bottom center',
+                marker: {
+                    size: [120, 50, 38, 24, 24], // 尺寸直接對應比例
+                    color: ['#ea580c', '#fdba74', '#fdba74', '#fed7aa', '#fed7aa']
+                }
+            };
+            const layoutBad = {
+                title: { text: 'Nvidia 一家獨大，市值把對手遠遠拋在後面', font: { size: 13, color: '#dc2626' } },
+                xaxis: { showgrid: false, zeroline: false },
+                yaxis: { showgrid: false, zeroline: false, showticklabels: false, range: [0.5, 1.5] },
+                margin: { l: 20, r: 20, t: 40, b: 20 }
+            };
+            Plotly.newPlot('chart-geom-bad', [traceBad], layoutBad, { responsive: true, displayModeBar: false });
+
+            // 誠實版本：開平方根 (Marker Size 面積成正比)
+            const traceGood = {
+                x: ['NVIDIA', 'TSMC', 'Broadcom', 'Samsung', 'Micron'],
+                y: [1, 1, 1, 1, 1],
+                mode: 'markers+text',
+                text: ['NV<br>$5,245B', 'TSMC<br>$2,189B', 'AVGO<br>$1,643B', 'Samsung<br>$1,055B', 'MU<br>$1,053B'],
+                textposition: 'bottom center',
+                marker: {
+                    size: [80, 52, 45, 36, 36], // 開平方根尺寸
+                    color: ['#0284c7', '#38bdf8', '#38bdf8', '#7dd3fc', '#7dd3fc']
+                }
+            };
+            const layoutGood = {
+                title: { text: '用面積畫：Nvidia 市值是 TSMC 的 2.4 倍，不是 5.7 倍', font: { size: 13, color: '#059669' } },
+                xaxis: { showgrid: false, zeroline: false },
+                yaxis: { showgrid: false, zeroline: false, showticklabels: false, range: [0.5, 1.5] },
+                margin: { l: 20, r: 20, t: 40, b: 20 }
+            };
+            Plotly.newPlot('chart-geom-good', [traceGood], layoutGood, { responsive: true, displayModeBar: false });
+        }
+
+        // 2. 平均數 vs 個體分佈對照圖表繪製
+        function renderMeanCharts() {
+            // 誤導版本：只畫平均數柱狀圖
+            const traceBad = {
+                x: ['台灣 (n=48)', '美國 (n=22)', '其他 (n=8)'],
+                y: [12.6, 31.5, 20.6],
+                type: 'bar',
+                marker: { color: ['#94a3b8', '#ea580c', '#94a3b8'] },
+                text: ['12.6%', '31.5%', '20.6%'],
+                textposition: 'auto'
+            };
+            const layoutBad = {
+                title: { text: '美國公司平均 ROE 31%, 是台灣的 2.5 倍', font: { size: 13, color: '#dc2626' } },
+                yaxis: { title: '平均 ROE (%)', range: [0, 35] },
+                margin: { l: 40, r: 20, t: 40, b: 30 }
+            };
+            Plotly.newPlot('chart-mean-bad', [traceBad], layoutBad, { responsive: true, displayModeBar: false });
+
+            // 誠實版本：畫出每個個體數據點與離群值 Apple
+            // 台灣數據點
+            const twX = Array(20).fill('台灣');
+            const twY = [2, 5, 8, 11, 12, 14, 15, 18, 20, 22, 25, 28, 30, 35, 40, -5, -8, 10, 16, 12];
+            
+            // 美國數據點 (包含 Apple 152%)
+            const usX = Array(12).fill('美國');
+            const usY = [8, 15, 18, 22, 25, 27, 30, 32, 55, 76, 86, 152];
+
+            const tracePointsTW = {
+                x: twX, y: twY, mode: 'markers', name: '台灣公司',
+                marker: { color: '#0284c7', size: 6, opacity: 0.7 }
+            };
+            const tracePointsUS = {
+                x: usX, y: usY, mode: 'markers', name: '美國公司',
+                marker: { color: '#ea580c', size: 7, opacity: 0.8 }
+            };
+
+            const layoutGood = {
+                title: { text: '看每一家：兩群大幅重疊，AAPL 一家拉高美國平均 5.7 個百分點', font: { size: 12, color: '#059669' } },
+                yaxis: { title: 'ROE (%)', range: [-15, 160] },
+                margin: { l: 40, r: 20, t: 40, b: 30 },
+                annotations: [{
+                    x: '美國', y: 152, text: 'AAPL 152% (極端離群值)',
+                    showarrow: true, arrowhead: 2, ax: -60, ay: 0
+                }]
+            };
+            Plotly.newPlot('chart-mean-good', [tracePointsTW, tracePointsUS], layoutGood, { responsive: true, displayModeBar: false });
+        }
+    </script>
+</body>
+</html>
