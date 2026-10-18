@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>單元五：常見圖表陷阱與「話術」剖析（下）——視覺幾何與統計分布</title>
+    
+    <!-- Tailwind CSS (樣式庫) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Plotly.js (開源圖表庫) -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+    <!-- MathJax 渲染設定：支援 $...$ 行內數學式與 $$...$$ 區塊式 -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['[', ']']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        .tab-btn.active { border-bottom: 3px solid #2563eb; color: #2563eb; font-weight: 600; }
+        .chart-box { height: 380px; width: 100%; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- 頂部導覽列 -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <span class="bg-blue-600 text-white text-xs px-2.5 py-1 rounded font-mono font-bold">U05</span>
+                    <h1 class="text-lg font-bold text-slate-900">單元五：常見圖表陷阱與「話術」剖析（下）——視覺幾何與統計分布</h1>
+                </div>
+                <nav class="flex space-x-8">
+                    <button onclick="switchTab('p1')" id="tab-p1" class="tab-btn active py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">1. 原理介紹</button>
+                    <button onclick="switchTab('p2')" id="tab-p2" class="tab-btn py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">2. 如何實作</button>
+                    <button onclick="switchTab('p3')" id="tab-p3" class="tab-btn py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">3. 圖形示範與 A/B 對照</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主體內容區塊 -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+        <!-- 第 1 頁：原理介紹 -->
+        <section id="page-p1" class="space-y-8">
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-900 mb-4 border-l-4 border-blue-600 pl-3">幾何縮放與統計平均數的失真機制</h2>
+                <p class="text-slate-600 leading-relaxed mb-4">
+                    除了軸線與時間切片外，圖表作者最常用於扭曲事實的手法是<strong>維度錯置（用半徑表達面積）</strong>與<strong>資訊壓縮（只看平均數而掩蓋離群值）</strong>。瞭解其背後的幾何原理與統計失真機制，能幫助我們識破精美的簡報話術。
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-xs">陷阱 01</span>
+                        <h3 class="font-bold text-slate-900 mt-2">幾何維度放大 (Radius Scaling)</h3>
+                        <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                            人類視覺感知的形狀大小是「面積」，若作者將數值對應至圓形的「半徑」，視覺面積會產生二次方（平方）暴增，導致第一名看起來巨大無朋。
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <span class="bg-red-100 text-red-800 font-bold px-2 py-0.5 rounded text-xs">陷阱 02</span>
+                        <h3 class="font-bold text-slate-900 mt-2">只看平均數 (Grand Mean Fallacy)</h3>
+                        <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                            極端離群值（如 Apple ROE 達 152%）會嚴重大幅拉高整體平均數，掩蓋了兩群樣本實質大量重疊的真實分佈現況。
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <span class="bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded text-xs">經濟學洞察</span>
+                        <h3 class="font-bold text-slate-900 mt-2">誤導圖表為何不消失？</h3>
+                        <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                            源自三項經濟學因素：資訊不對稱（繪圖者知道軸點/讀者不查）、注意力稀缺（讀者只看標題與形狀）與誘因不一致（公司法說會誘因）。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 mb-3 border-l-4 border-amber-500 pl-3">氣泡圖面積與半徑的幾何算式</h3>
+                    <p class="text-slate-600 leading-relaxed mb-3">
+                        設兩家公司市值為 $V_1 = 5,245$ (NVIDIA) 與 $V_2 = 2,189$ (台積電)，實際市值比例為 $V_1 / V_2 \approx 2.40$ 倍。
+                    </p>
+                    <div class="bg-slate-100 p-3 rounded text-center my-2">
+                        $$\text{若直接令半徑 } r \propto V \implies \text{視覺面積比 } \frac{A_1}{A_2} = \left(\frac{r_1}{r_2}\right)^2 = \left(\frac{5245}{2189}\right)^2 \approx 5.74 \text{ 倍}$$
+                    </div>
+                    <p class="text-slate-600 text-sm">
+                        原本僅有 $2.40$ 倍的差距被誇大為 $5.74$ 倍。誠實的氣泡圖半徑必須開平方根換算：$r \propto \sqrt{V}$，方能確保視覺面積正比於真實數值。
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 mb-3 border-l-4 border-red-500 pl-3">平均數與離群值（Outliers）拉抬計算</h3>
+                    <p class="text-slate-600 leading-relaxed mb-3">
+                        在美國 22 家樣本公司中，單一極端值 Apple (ROE = $152\%$) 對總平均數的拉抬效應可表達為：
+                    </p>
+                    <div class="bg-slate-100 p-3 rounded text-center my-2">
+                        $$\Delta \bar{X} = \frac{\text{ROE}_{\text{Apple}} - \bar{X}_{\text{others}}}{n} = \frac{152\% - 25.8\%}{22} \approx 5.74 \text{ 個百分點}$$
+                    </div>
+                    <p class="text-slate-600 text-sm">
+                        單單 Apple 一家公司就把美國平均 ROE 從 $25.8\%$ 人為抬升至 $31.5\%$。若改觀察中位數（美國 $27\%$, 台灣 $12\%$）與個體散佈圖，便會發現兩國大多數公司的 ROE 其實高度重疊。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第 2 頁：如何實作 -->
+        <section id="page-p2" class="space-y-8 hidden">
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-900 mb-4 border-l-4 border-blue-600 pl-3">Python 分佈圖形與氣泡幾何繪圖規範</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <h3 class="font-bold text-slate-800 mb-2">正確氣泡圖與分佈圖寫法</h3>
+                        <p class="text-sm text-slate-600 mb-3">使用 matplotlib / plotly 繪圖時：</p>
+                        <ul class="text-sm space-y-1 text-slate-600 font-mono bg-white p-3 rounded border border-slate-200">
+                            <li>• 氣泡大小：plt.scatter(s=np.sqrt(values)) 以確保面積正比</li>
+                            <li>• 展示分佈：選用 Strip Plot + Box Plot 展示真實點陣</li>
+                            <li>• 標示統計量：同時畫出「中位數 (Median)」線段標記</li>
+                        </ul>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <h3 class="font-bold text-slate-800 mb-2">Plotly 個體散佈圖 (Strip Plot) 範例</h3>
+                        <p class="text-sm text-slate-600 mb-3">畫出每一家公司點陣避免平均數陷阱：</p>
+                        <div class="bg-slate-900 text-slate-100 p-3 rounded font-mono text-xs overflow-x-auto">
+                            import plotly.express as px<br><br>
+                            # 使用 box 搭配 points="all" 呈現全部個體點陣<br>
+                            fig = px.box(df, x="country", y="roe", points="all",<br>
+                                         hover_data=["company_name"])<br>
+                            fig.update_traces(boxpoints='all', jitter=0.3)<br>
+                            fig.show()
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-900 mb-4 border-l-4 border-purple-600 pl-3">分佈審查 Prompt Engineering (提示詞設計)</h2>
+                <p class="text-slate-600 text-sm mb-4">請 LLM 產出多樣本分佈圖表時，可使用以下 Prompt 避免幾何與平均數陷阱：</p>
+                <div class="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-sm leading-relaxed overflow-x-auto">
+<pre>請作為資料視覺化與統計學專家，撰寫 Python / Plotly 程式碼。
+
+【目標數據】: 台灣 (n=48) 與美國 (n=22) 半導體公司 FY2025 ROE 數據。
+【設計原則 - 分佈與幾何規範】:
+1. 嚴禁僅繪製平均數長條圖 (Mean Bar Chart)。
+2. 請
