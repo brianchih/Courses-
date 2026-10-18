@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>單元一：視覺化的本質——圖會說話，也會說謊</title>
+    
+    <!-- 引入 Tailwind CSS (樣式庫) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 引入 MathJax (LaTeX 數學公式排版) -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <!-- 引入 Leaflet.js (免費開源地圖庫) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        .tab-btn.active { border-bottom: 3px solid #2563eb; color: #2563eb; font-weight: 600; }
+        #map { height: 520px; width: 100%; border-radius: 0.75rem; z-index: 1; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- 頂部導覽列 -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <span class="bg-blue-600 text-white text-xs px-2.5 py-1 rounded font-mono font-bold">U01</span>
+                    <h1 class="text-lg font-bold text-slate-900">單元一：視覺化的本質——圖會說話，也會說謊</h1>
+                </div>
+                <nav class="flex space-x-8">
+                    <button onclick="switchTab('p1')" id="tab-p1" class="tab-btn active py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">1. 原理介紹</button>
+                    <button onclick="switchTab('p2')" id="tab-p2" class="tab-btn py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">2. 如何實作</button>
+                    <button onclick="switchTab('p3')" id="tab-p3" class="tab-btn py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">3. 圖形示範 (免費地圖)</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主體內容區塊 -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+        <!-- 第 1 頁：原理介紹 -->
+        <section id="page-p1" class="space-y-8">
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-900 mb-4 border-l-4 border-blue-600 pl-3">視覺編碼（Visual Encoding）與映射函數</h2>
+                <p class="text-slate-600 leading-relaxed mb-4">
+                    資料視覺化的本質，是將抽象的數據空間（Data Domain $D$）透過特定對應規則，映射至人類視覺認知感知空間（Visual Domain $V$）的過程。我們可以將視覺化過程定義為一個映射函數：
+                </p>
+                <div class="bg-slate-100 p-4 rounded-lg text-center my-4 overflow-x-auto">
+                    $$f: D \longrightarrow V \quad \text{where} \quad D = \{d_1, d_2, \dots, d_n\}, \: V = \{v_1, v_2, \dots, v_m\}$$
+                </div>
+                <p class="text-slate-600 leading-relaxed">
+                    視覺變數包含<strong>位置 (Position)</strong>、<strong>長度 (Length)</strong>、<strong>角度 (Angle)</strong>、<strong>面積 (Area)</strong>、<strong>色相 (Hue)</strong> 與<strong>色彩彩度 (Saturation)</strong>。不同視覺編碼對於精確度（Accuracy）的認知等級不同，其中「位置」與「長度」精確度最高，而「面積」與「色彩」則容易產生視覺偏差。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 mb-3 border-l-4 border-amber-500 pl-3">幾何放大陷阱：半徑 vs 面積</h3>
+                    <p class="text-slate-600 leading-relaxed mb-3">
+                        當我們使用氣泡圖（Bubble Chart）代表數值大小時，若誤用數值直接映射為圓的<strong>半徑 ($r$)</strong>，而非<strong>面積 ($A$)</strong>，將會造成嚴重的感官誇大效果：
+                    </p>
+                    <div class="bg-slate-100 p-3 rounded text-center my-2">
+                        $$A = \pi r^2 \implies \text{若 } r_2 = k \cdot r_1, \text{ 則 } A_2 = k^2 \cdot A_1$$
+                    </div>
+                    <p class="text-slate-600 text-sm">
+                        例如：當數值僅成長為 $2$ 倍時，若半徑放大 $2$ 倍，視覺面積將暴增為 $2^2 = 4$ 倍，形成誤導性視覺效果。誠實的畫法應取平方根運算：
+                    </p>
+                    <div class="bg-slate-100 p-3 rounded text-center my-2 text-sm">
+                        $$r_{\text{correct}} = r_0 \times \sqrt{\frac{V_i}{V_0}}$$
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 mb-3 border-l-4 border-emerald-500 pl-3">馬歇爾（Marshall）產業群聚經濟學</h3>
+                    <p class="text-slate-600 leading-relaxed mb-3">
+                        同一份資料集中，廠商為什麼傾向「擠在一起」？馬歇爾（Alfred Marshall）提出產業群聚的三大理由：
+                    </p>
+                    <ul class="space-y-2 text-slate-600 text-sm">
+                        <li class="flex items-start">
+                            <span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded mr-2 shrink-0">01 人才池</span>
+                            <span>工程師轉職不必搬家，企業招募迅速且員工承擔風險低。</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded mr-2 shrink-0">02 專屬供應商</span>
+                            <span>設備、零組件與維修資源就近支援，交期以小時而非以週計算。</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded mr-2 shrink-0">03 知識外溢</span>
+                            <span>餐會、球場與非正式網絡中，未記載於合約的技術訊息流通極快。</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第 2 頁：如何實作 -->
+        <section id="page-p2" class="space-y-8 hidden">
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-900 mb-4 border-l-4 border-blue-600 pl-3">免費工具與開發環境組合</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <h3 class="font-bold text-slate-800 mb-2">Python 數據處理與繪圖</h3>
+                        <p class="text-sm text-slate-600 mb-3">開源免費之核心運算分析工具鏈：</p>
+                        <ul class="text-sm space-y-1 text-slate-600 font-mono bg-white p-3 rounded border border-slate-200">
+                            <li>• pandas (資料清理與轉換)</li>
+                            <li>• matplotlib / seaborn (靜態專業圖表)</li>
+                            <li>• plotly / folium (動態互動地圖)</li>
+                        </ul>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <h3 class="font-bold text-slate-800 mb-2">前端開放底圖與圖庫</h3>
+                        <p class="text-sm text-slate-600 mb-3">100% 免費且免 API Key 部署資源：</p>
+                        <ul class="text-sm space-y-1 text-slate-600 font-mono bg-white p-3 rounded border border-slate-200">
+                            <li>• Leaflet.js (極輕量地圖渲染 engine)</li>
+                            <li>• OpenStreetMap / Carto Light Tiles</li>
+                            <li>• MathJax (LaTeX 數學公式排版)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-900 mb-4 border-l-4 border-purple-600 pl-3">誠實圖表 Prompt Engineering (提示詞設計)</h2>
+                <p class="text-slate-600 text-sm mb-4">使用 LLM 生成視覺化程式碼時，可遵循「三拍子原則」設計提示詞範本：</p>
+                <div class="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-sm leading-relaxed overflow-x-auto">
+<pre>請作為資料視覺化專家，撰寫 Python / Plotly 程式碼。
+
+【目標數據】: 91 家半導體公司總部經緯度與財報數據。
+【設計原則 - 三拍子規範】:
+1. 一個問題：主標題直接寫出數據結論（非變數名稱）。
+2. 一張圖：採用灰底配色，僅對重點項目使用一個單一強調色。
+3. 一個陷阱標記：
+   - Y 軸必須從 0 開始；若為氣泡圖，半徑必須進行平方根換算 (r = sqrt(value))。
+   - 頁腳必須清晰註明：數據來源、時間範圍、統計樣本數 n、計算口徑與缺失值說明。
+4. 提供誠實版本與誤導版本的對照註解。</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第 3 頁：圖形示範 -->
+        <section id="page-p3" class="space-y-6 hidden">
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">半導體產業總部地圖與群聚分析</h2>
+                        <p class="text-sm text-slate-500 mt-1">底圖採用 OpenStreetMap & Carto 自由開放圖資（100% 免費、無須 API 金鑰）</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="setView('global')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-sm font-medium transition">全球全貌 (91家)</button>
+                        <button onclick="setView('sv')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-sm font-medium transition">矽谷放大 (16家)</button>
+                        <button onclick="setView('taiwan')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-sm font-medium transition">台灣全境 (48家)</button>
+                        <button onclick="setView('hsinchu')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium transition">新竹 3 公里圈 (15家)</button>
+                    </div>
+                </div>
+
+                <!-- Leaflet 地圖容器 -->
+                <div id="map"></div>
+
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-600 bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <div><strong>數據點說明：</strong>橘色點為公司總部經緯度。</div>
+                    <div><strong>聚焦核心：</strong>藍色虛線圓圈為台積電總部 3 公里半徑範圍。</div>
+                    <div><strong>資料來源與標示：</strong> OpenStreetMap / 證交所 OpenAPI / Wikidata 數據對照。</div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 頁尾 -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            呂宗宜博士 (C.Y. Lu, Ph.D.) 數據視覺化課程講義實作教材 | 使用開源免費套件庫建構
+        </div>
+    </footer>
+
+    <!-- JavaScript 腳本區 -->
+    <script>
+        // 切換頁籤
+        function switchTab(tabId) {
+            ['p1', 'p2', 'p3'].forEach(id => {
+                document.getElementById('page-' + id).classList.add('hidden');
+                document.getElementById('tab-' + id).classList.remove('active');
+            });
+            document.getElementById('page-' + tabId).classList.remove('hidden');
+            document.getElementById('tab-' + tabId).classList.add('active');
+
+            if (tabId === 'p3') {
+                setTimeout(() => {
+                    if (!mapInitialized) {
+                        initMap();
+                    } else {
+                        map.invalidateSize();
+                    }
+                }, 100);
+            }
+        }
+
+        // 地圖相關變數與實作
+        let map;
+        let mapInitialized = false;
+        let tsmcCircle = null;
+
+        // 公司數據範例
+        const companies = [
+            // 矽谷群聚
+            { name: "NVIDIA", lat: 37.3713, lng: -121.9670, region: "sv", desc: "聖塔克拉拉 (Santa Clara)" },
+            { name: "Intel", lat: 37.3875, lng: -121.9636, region: "sv", desc: "聖塔克拉拉 (Santa Clara)" },
+            { name: "AMD", lat: 37.3807, lng: -121.9723, region: "sv", desc: "聖塔克拉拉 (Santa Clara)" },
+            { name: "AMAT (應用材料)", lat: 37.3700, lng: -121.9750, region: "sv", desc: "聖塔克拉拉 (Santa Clara)" },
+            { name: "Broadcom", lat: 37.4040, lng: -122.1484, region: "sv", desc: "帕羅奧圖 (Palo Alto)" },
+
+            // 新竹 3 公里核心圈群聚
+            { name: "台積電 (TSMC)", lat: 24.7712, lng: 121.0132, region: "hsinchu", desc: "新竹科學園區 (核心點)" },
+            { name: "聯發科 (MediaTek)", lat: 24.7745, lng: 121.0160, region: "hsinchu", desc: "TSMC 半徑 3 公里圈內" },
+            { name: "聯電 (UMC)", lat: 24.7758, lng: 121.0065, region: "hsinchu", desc: "TSMC 半徑 3 公里圈內" },
+            { name: "旺宏 (Macronix)", lat: 24.7780, lng: 121.0180, region: "hsinchu", desc: "TSMC 半徑 3 公里圈內" },
+            { name: "智原 (Faraday)", lat: 24.7680, lng: 121.0100, region: "hsinchu", desc: "TSMC 半徑 3 公里圈內" },
+            { name: "創意電子 (GUC)", lat: 24.7700, lng: 121.0150, region: "hsinchu", desc: "TSMC 半徑 3 公里圈內" },
+            { name: "力積電 (PSMC)", lat: 24.7720, lng: 121.0020, region: "hsinchu", desc: "TSMC 半徑 3 公里圈內" },
+            { name: "京元電子 (KYEC)", lat: 24.7790, lng: 121.0120, region: "hsinchu", desc: "TSMC 半徑 3 公里圈內" },
+
+            // 台灣其他區域
+            { name: "日月光 (ASE)", lat: 22.7256, lng: 120.3050, region: "taiwan", desc: "高雄楠梓" },
+            { name: "南亞科", lat: 25.0420, lng: 121.3890, region: "taiwan", desc: "新北泰山" },
+            
+            // 全球其他區域
+            { name: "ASML", lat: 51.4042, lng: 5.4578, region: "global", desc: "荷蘭 費爾德霍芬 (Veldhoven)" },
+            { name: "三星電子 (Samsung)", lat: 37.2636, lng: 127.0286, region: "global", desc: "韓國 水原" },
+            { name: "東京威力科創 (TEL)", lat: 35.6722, lng: 139.7228, region: "global", desc: "日本 東京" }
+        ];
+
+        function initMap() {
+            // 初始化地圖，預設經緯度與縮放級別
+            map = L.map('map').setView([24.7712, 121.0132], 13);
+
+            // 載入 Carto 自由開放圖資 (免註冊 API Key)
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+
+            // 繪製台積電 3 公里聚焦圈
+            tsmcCircle = L.circle([24.7712, 121.0132], {
+                color: '#2563eb',
+                fillColor: '#60a5fa',
+                fillOpacity: 0.15,
+                radius: 3000,
+                dashArray: '6, 6',
+                weight: 2
+            }).addTo(map);
+            tsmcCircle.bindPopup("<strong>台積電總部半徑 3 公里涵蓋圈</strong><br>包含 15 家核心供應鏈夥伴與 IC 設計公司");
+
+            // 標示所有公司點位
+            companies.forEach(comp => {
+                const marker = L.circleMarker([comp.lat, comp.lng], {
+                    radius: 7,
+                    fillColor: comp.name.includes("TSMC") ? "#dc2626" : "#f97316",
+                    color: "#ffffff",
+                    weight: 1.5,
+                    opacity: 1,
+                    fillOpacity: 0.85
+                }).addTo(map);
+
+                marker.bindPopup(`<strong>${comp.name}</strong><br>${comp.desc}`);
+            });
+
+            mapInitialized = true;
+        }
+
+        // 地圖視角切換控制
+        function setView(viewType) {
+            if (!map) return;
+
+            if (viewType === 'global') {
+                map.setView([25.0, 10.0], 2);
+            } else if (viewType === 'sv') {
+                map.setView([37.38, -121.97], 11);
+            } else if (viewType === 'taiwan') {
+                map.setView([23.8, 121.0], 8);
+            } else if (viewType === 'hsinchu') {
+                map.setView([24.7712, 121.0132], 13);
+                if (tsmcCircle) tsmcCircle.openPopup();
+            }
+        }
+    </script>
+</body>
+</html>
