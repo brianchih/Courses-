@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>單元四：常見圖表陷阱與「話術」剖析（上）——軸線、時間與空間</title>
+    
+    <!-- Tailwind CSS (樣式庫) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Plotly.js (開源圖表庫) -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+    <!-- MathJax 渲染設定：支援 $...$ 行內數學式與 $$...$$ 區塊式 -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        .tab-btn.active { border-bottom: 3px solid #2563eb; color: #2563eb; font-weight: 600; }
+        .chart-box { height: 380px; width: 100%; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- 頂部導覽列 -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <span class="bg-blue-600 text-white text-xs px-2.5 py-1 rounded font-mono font-bold">U04</span>
+                    <h1 class="text-lg font-bold text-slate-900">單元四：常見圖表陷阱與「話術」剖析（上）——軸線、時間與空間</h1>
+                </div>
+                <nav class="flex space-x-8">
+                    <button onclick="switchTab('p1')" id="tab-p1" class="tab-btn active py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">1. 原理介紹</button>
+                    <button onclick="switchTab('p2')" id="tab-p2" class="tab-btn py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">2. 如何實作</button>
+                    <button onclick="switchTab('p3')" id="tab-p3" class="tab-btn py-5 px-1 text-sm text-slate-600 hover:text-blue-600 transition">3. 圖形示範與 A/B 對照</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主體內容區塊 -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+        <!-- 第 1 頁：原理介紹 -->
+        <section id="page-p1" class="space-y-8">
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-900 mb-4 border-l-4 border-blue-600 pl-3">軸線與時間切片的操控機制</h2>
+                <p class="text-slate-600 leading-relaxed mb-4">
+                    圖表呈現的視覺比例，本質上由繪圖者的三項選擇所決定：<strong>軸線起點 (Baseline)</strong>、<strong>刻度比例 (Scale)</strong> 與<strong>時間窗範圍 (Time Window)</strong>。當這些變數被有心選擇時，同一份真實數據將導出截然相反的商業結論。
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <span class="bg-red-100 text-red-800 font-bold px-2 py-0.5 rounded text-xs">陷阱 01</span>
+                        <h3 class="font-bold text-slate-900 mt-2">截斷 Y 軸 (Truncated Axis)</h3>
+                        <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                            柱狀圖（Bar Chart）柱子的高度正比於數值。若 Y 軸不從 0 開始，將會人為暴增視覺長度比例，將小幅差距誇大為數倍懸殊差距。
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-xs">陷阱 02</span>
+                        <h3 class="font-bold text-slate-900 mt-2">雙 Y 軸 (Dual Y-Axes)</h3>
+                        <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                            左右兩側的刻度均由作者任意指定，曲線與柱體的「交叉點」純屬視覺巧合，極易誤導讀者產生虛假的因果關聯。
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <span class="bg-purple-100 text-purple-800 font-bold px-2 py-0.5 rounded text-xs">陷阱 03</span>
+                        <h3 class="font-bold text-slate-900 mt-2">櫻桃採摘 (Cherry-picking)</h3>
+                        <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                            刻意選擇景氣谷底作為比較基期（Base Year），或是只擷取短期暴跌的時間視窗，掩蓋長期真實的向上趨勢。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 mb-3 border-l-4 border-red-500 pl-3">截斷 Y 軸的誇大倍率數學解析</h3>
+                    <p class="text-slate-600 leading-relaxed mb-3">
+                        設兩家公司真實數據分別為 $V_A = 45.1\%$ 與 $V_B = 17.6\%$（真實比例為 $45.1 / 17.6 \approx 2.56$ 倍）。若將 Y 軸截斷從 $y_{min} = 14\%$ 開始：
+                    </p>
+                    <div class="bg-slate-100 p-3 rounded text-center my-2">
+                        $$\text{視覺長度比} = \frac{V_A - y_{min}}{V_B - y_{min}} = \frac{45.1 - 14}{17.6 - 14} = \frac{31.1}{3.6} \approx 8.64 \text{ 倍}$$
+                    </div>
+                    <p class="text-slate-600 text-sm">
+                        原本僅有 $2.56$ 倍的真實獲利差距，在視覺上被無端誇大為 $8.64$ 倍，嚴重扭曲讀者的直覺認知。
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 mb-3 border-l-4 border-blue-500 pl-3">雙 Y 軸替代方案：小多版分格圖 (Small Multiples)</h3>
+                    <p class="text-slate-600 leading-relaxed mb-3">
+                        雙 Y 軸圖表之所以危險，在於讀者無法在第一時間對比兩組不同單位的量化關係。
+                    </p>
+                    <p class="text-slate-600 text-sm mb-3">
+                        <strong>誠實的解決方案：</strong>使用「上下分格（Small Multiples）」展示。上圖展示金額絕對值（資本支出，十億美元），下圖展示百分比比率（資本支出佔營收比 %），並讓兩家公司共用同一比率刻度軸，即可一目瞭然高下。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第 2 頁：如何實作 -->
+        <section id="page-p2" class="space-y-8 hidden">
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-900 mb-4 border-l-4 border-blue-600 pl-3">Python 數據清理與繪圖規範</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <h3 class="font-bold text-slate-800 mb-2">預防軸線與時間誤導的繪圖準則</h3>
+                        <p class="text-sm text-slate-600 mb-3">使用 matplotlib / plotly 時必須確保：</p>
+                        <ul class="text-sm space-y-1 text-slate-600 font-mono bg-white p-3 rounded border border-slate-200">
+                            <li>• 柱狀圖：fig.update_yaxes(rangemode="tozero") 強制從 0 開始</li>
+                            <li>• 折線圖：時間軸刻度必須保持等距 (Equal time intervals)</li>
+                            <li>• 指數對比：標示基期年份（如以 2021 = 100 為基準）</li>
+                        </ul>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <h3 class="font-bold text-slate-800 mb-2">Plotly 上下分格 (Subplots) 範例</h3>
+                        <p class="text-sm text-slate-600 mb-3">使用 Python 替代雙 Y 軸的寫法：</p>
+                        <div class="bg-slate-900 text-slate-100 p-3 rounded font-mono text-xs overflow-x-auto">
+                            from plotly.subplots import make_subplots<br>
+                            import plotly.graph_objects as go<br><br>
+                            fig = make_subplots(rows=2, cols=1, shared_xaxes=True)<br>
+                            fig.add_trace(go.Bar(x=years, y=capex), row=1, col=1)<br>
+                            fig.add_trace(go.Scatter(x=years, y=ratio), row=2, col=1)<br>
+                            fig.update_yaxes(range=[0, 60], row=2, col=1) # 共用刻度
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-900 mb-4 border-l-4 border-purple-600 pl-3">軸線審查 Prompt Engineering (提示詞設計)</h2>
+                <p class="text-slate-600 text-sm mb-4">請 LLM 產出商業財報圖表時，可使用以下 Prompt 避免軸線與基期陷阱：</p>
+                <div class="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-sm leading-relaxed overflow-x-auto">
+<pre>請作為商業財報視覺化專家，撰寫 Python / Plotly 程式碼。
+
+【目標數據】: 台積電與聯電 FY2021-2025 淨利率與資本支出數據。
+【設計原則 - 軸線與時間切片規範】:
+1. 嚴禁使用雙 Y 軸 (Dual Y-axes)，請改用上下分格小多版 (Subplots)。
+2. 若畫柱狀圖，Y 軸必須明確設定 range=[0, max_value]，嚴禁截斷 Y 軸。
+3. 時間窗口規範：
+   - 繪製股價或營收時，必須同時展示完整年度數據（如全年度 52 週），不得僅剪裁單月跌幅。
+   - 若使用相對指數，必須於副標題清晰註明基期（如「以 2021 年為基期 = 100」）。
+4. 圖表標題必須直接寫出誠實結論，並於圖末加上來源與 n 值說明。</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第 3 頁：圖形示範與 A/B 對照 -->
+        <section id="page-p3" class="space-y-8 hidden">
+            <!-- 示範一：截斷 Y 軸對照 -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <div class="mb-4">
+                    <span class="bg-red-100 text-red-800 text-xs px-2.5 py-1 rounded font-bold">對照組 01</span>
+                    <h2 class="text-xl font-bold text-slate-900 mt-2">FY2025 淨利率對比：台積電 vs 聯電</h2>
+                    <p class="text-sm text-slate-500 mt-1">真實數據：台積電 45.1% vs 聯電 17.6% (真實差距為 2.56 倍)。</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border-2 border-red-200 bg-red-50/30 p-4 rounded-lg">
+                        <div class="text-red-600 font-bold text-sm mb-2 text-center">✕ 誤導畫法：截斷 Y 軸 (起點從 14% 開始)</div>
+                        <div id="chart-trunc-bad" class="chart-box"></div>
+                        <div class="bg-red-100 text-red-800 text-xs p-2 rounded text-center mt-2">視覺效果：柱子高度差距達 8.6 倍！大幅誇大差距。</div>
+                    </div>
+                    <div class="border-2 border-emerald-200 bg-emerald-50/30 p-4 rounded-lg">
+                        <div class="text-emerald-600 font-bold text-sm mb-2 text-center">✓ 誠實畫法：Y 軸從 0% 開始</div>
+                        <div id="chart-trunc-good" class="chart-box"></div>
+                        <div class="bg-emerald-100 text-emerald-800 text-xs p-2 rounded text-center mt-2">視覺效果：真實反映 2.56 倍的比例差距。</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 示範二：挑選時間窗對照 -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <div class="mb-4">
+                    <span class="bg-purple-100 text-purple-800 text-xs px-2.5 py-1 rounded font-bold">對照組 02</span>
+                    <h2 class="text-xl font-bold text-slate-900 mt-2">台積電 2025 年股價走勢：短看下跌 vs 遠看大漲</h2>
+                    <p class="text-sm text-slate-500 mt-1">同一份 2025 年週收盤價數據，挑選不同的時間窗口會得到完全相反的解讀。</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border-2 border-red-200 bg-red-50/30 p-4 rounded-lg">
+                        <div class="text-red-600 font-bold text-sm mb-2 text-center">✕ 誤導畫法：刻意剪裁 1 月至 4 月時間窗</div>
+                        <div id="chart-window-bad" class="chart-box"></div>
+                        <div class="bg-red-100 text-red-800 text-xs p-2 rounded text-center mt-2">結論導向：「台積電三個多月暴跌 21%！」造成恐慌。</div>
+                    </div>
+                    <div class="border-2 border-emerald-200 bg-emerald-50/30 p-4 rounded-lg">
+                        <div class="text-emerald-600 font-bold text-sm mb-2 text-center">✓ 誠實畫法：放回 2025 全年時間窗</div>
+                        <div id="chart-window-good" class="chart-box"></div>
+                        <div class="bg-emerald-100 text-emerald-800 text-xs p-2 rounded text-center mt-2">結論導向：「放回全年看，台積電 2025 全年大漲 44%。」</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 頁尾 -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            呂宗宜博士 (C.Y. Lu, Ph.D.) 數據視覺化課程講義實作教材 | 軸線與時間陷阱剖析
+        </div>
+    </footer>
+
+    <!-- JavaScript 腳本區 -->
+    <script>
+        // 切換頁籤
+        function switchTab(tabId) {
+            ['p1', 'p2', 'p3'].forEach(id => {
+                document.getElementById('page-' + id).classList.add('hidden');
+                document.getElementById('tab-' + id).classList.remove('active');
+            });
+            document.getElementById('page-' + tabId).classList.remove('hidden');
+            document.getElementById('tab-' + tabId).classList.add('active');
+
+            if (tabId === 'p3') {
+                setTimeout(() => {
+                    renderTruncatedCharts();
+                    renderWindowCharts();
+                }, 100);
+            }
+
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise();
+            }
+        }
+
+        // 1. 截斷 Y 軸對照圖表繪製
+        function renderTruncatedCharts() {
+            const companies = ['台積電 (TSMC)', '聯電 (UMC)'];
+            const values = [45.1, 17.6];
+
+            // 誤導版本：Y軸刻度從 14% 開始
+            const traceBad = {
+                x: companies,
+                y: values,
+                type: 'bar',
+                marker: { color: ['#ea580c', '#94a3b8'] },
+                text: ['45.1%', '17.6%'],
+                textposition: 'auto'
+            };
+            const layoutBad = {
+                title: { text: 'TSMC 獲利能力把 UMC 遠遠甩在後面', font: { size: 13, color: '#dc2626' } },
+                yaxis: { range: [14, 50], title: '淨利率 (%)' },
+                margin: { l: 40, r: 20, t: 40, b: 30 }
+            };
+            Plotly.newPlot('chart-trunc-bad', [traceBad], layoutBad, { responsive: true, displayModeBar: false });
+
+            // 誠實版本：Y軸刻度從 0% 開始
+            const traceGood = {
+                x: companies,
+                y: values,
+                type: 'bar',
+                marker: { color: ['#2563eb', '#94a3b8'] },
+                text: ['45.1%', '17.6%'],
+                textposition: 'auto'
+            };
+            const layoutGood = {
+                title: { text: 'TSMC 淨利率是 UMC 的 2.6 倍', font: { size: 13, color: '#059669' } },
+                yaxis: { range: [0, 50], title: '淨利率 (%)' },
+                margin: { l: 40, r: 20, t: 40, b: 30 }
+            };
+            Plotly.newPlot('chart-trunc-good', [traceGood], layoutGood, { responsive: true, displayModeBar: false });
+        }
+
+        // 2. 挑選時間窗對照圖表繪製
+        function renderWindowCharts() {
+            // 全年 12 月週收盤價模擬數據
+            const weeksFull = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+            const pricesFull = [1070, 1120, 1000, 850, 980, 1080, 1150, 1180, 1300, 1450, 1400, 1540];
+
+            // 前四個月剪裁數據
+            const weeksShort = ['1月', '2月', '3月', '4月'];
+            const pricesShort = [1070, 1120, 1000, 850];
+
+            // 誤導版本：僅展示前四個月跌幅
+            const traceBad = {
+                x: weeksShort,
+                y: pricesShort,
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: { color: '#dc2626', width: 3 },
+                marker: { size: 6 }
+            };
+            const layoutBad = {
+                title: { text: 'TSMC 股價三個多月跌 21%', font: { size: 13, color: '#dc2626' } },
+                yaxis: { title: '週收盤價 (新台幣)' },
+                margin: { l: 45, r: 20, t: 40, b: 30 }
+            };
+            Plotly.newPlot('chart-window-bad', [traceBad], layoutBad, { responsive: true, displayModeBar: false });
+
+            // 誠實版本：展示全年向上趨勢，並標示前四個月回檔
+            const traceGoodFull = {
+                x: weeksFull,
+                y: pricesFull,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: '全年走勢',
+                line: { color: '#0284c7', width: 3 }
+            };
+            const traceGoodDrop = {
+                x: weeksShort,
+                y: pricesShort,
+                type: 'scatter',
+                mode: 'lines',
+                name: '前 4 月回檔段',
+                line: { color: '#f97316', width: 4 }
+            };
+            const layoutGood = {
+                title: { text: '放回全年看：TSMC 2025 年上漲 44%', font: { size: 13, color: '#059669' } },
+                yaxis: { title: '週收盤價 (新台幣)' },
+                margin: { l: 45, r: 20, t: 40, b: 30 },
+                showlegend: true,
+                legend: { x: 0.05, y: 0.95 }
+            };
+            Plotly.newPlot('chart-window-good', [traceGoodFull, traceGoodDrop], layoutGood, { responsive: true, displayModeBar: false });
+        }
+    </script>
+</body>
+</html>
